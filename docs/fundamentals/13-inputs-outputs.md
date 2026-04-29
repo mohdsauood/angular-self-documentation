@@ -248,6 +248,8 @@ export class RatingComponent {
 <app-rating [(rating)]="myRating" />
 ```
 
+> **Note:** Two-way binding is `model()`'s *primary* use case, but it is not the only one. Because `model()` is a full writable signal, you can also use it one-way (`[rating]` or `(ratingChange)`), as internal component state without any parent binding, and inside `computed()` / `effect()`. See [20-signals.md — Beyond two-way binding](20-signals.md#beyond-two-way-binding) for details.
+
 ### Manual equivalent (old way)
 
 ```typescript
@@ -264,7 +266,7 @@ export class RatingComponent {
 - `input.required()` = data flows *in* and the parent **must** provide it, or compiler errors
 - `output()` = child emits events *out* to parent, parent catches with `$event`
 - `$event` = Angular/AngularJS convention for "the value this event carried"
-- `model()` = two-way: data flows both in and out
+- `model()` = two-way: data flows both in and out; also a full writable signal usable for local state, one-way bindings, `computed()`, `effect()`, and `.subscribe()` — see [20-signals.md § Beyond two-way binding](20-signals.md#beyond-two-way-binding)
 
 ---
 

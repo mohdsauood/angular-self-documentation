@@ -49,7 +49,7 @@ Before signals, Angular used **Zone.js** to detect changes. Zone.js monkey-patch
 |--------|-------------|-----------|-------------|
 | Writable signal | `signal()` | Yes | You control the value |
 | Computed signal | `computed()` | No | Derived from other signals |
-| Model signal | `model()` | Yes (two-way) | Two-way binding between parent and child |
+| Model signal | `model()` | Yes (two-way) | Two-way binding between parent and child; also a full writable signal usable for local state, `computed()`, `effect()`, and subscriptions |
 
 ---
 
@@ -122,7 +122,13 @@ export class CartComponent {
 
 ### What is `model()`?
 
-`model()` is a **writable signal designed specifically for two-way data binding** between a parent and child component. It was introduced in **Angular 17.2**.
+`model()` is a **writable signal** introduced in **Angular 17.2**. Its primary design goal is two-way data binding between a parent and child component, but because it is a full writable signal it has several other use cases too (see [Beyond two-way binding](#beyond-two-way-binding) below).
+
+Under the hood, every `model()` automatically creates:
+- An **input** — parent can push a value in.
+- An **output** named `${propertyName}Change` — fires whenever the child calls `.set()` or `.update()`.
+
+When used with banana-in-a-box syntax `[(x)]`, both sides stay in sync. But the input and output can also be used independently.
 
 It is the modern, signal-based replacement for the old pattern:
 ```typescript
@@ -280,6 +286,125 @@ export class ProductDetailComponent {
 4. Angular automatically fires the `ratingChange` output — the parent's `productRating` signal updates
 5. Both `<app-rating>` (star highlights) and `<p>You rated: ...</p>` re-render with the new value
 6. The parent can read `productRating()` at any time — for example, when the user clicks Save
+
+---
+
+### Beyond two-way binding
+
+`model()` is **not** limited to the `[(banana-box)]` two-way pattern. Because it is a full writable signal it can be used in all of the following ways.
+
+#### 1. One-way input binding only
+
+The parent can push values *in* without listening to changes — identical to using `input()`:
+
+```html
+<!-- parent provides a value but doesn't need to react to changes -->
+<app-rating [rating]="fixedRating" />
+```
+
+```typescript
+export class RatingComponent {
+  rating = model(0); // still writable inside the child; parent just seeds the value
+}
+```
+
+#### 2. One-way output (event notification) only
+
+The parent can listen to changes *without* two-way sync — identical to using `output()`:
+
+```html
+<!-- parent only wants to know when the user picks a rating -->
+<app-rating (ratingChange)="onRatingChange($event)" />
+```
+
+```typescript
+export class ProductPage {
+  onRatingChange(value: number) {
+    console.log('User picked', value);
+  }
+}
+```
+
+#### 3. Local component state (no parent binding at all)
+
+You can use `model()` exactly like `signal()` as internal state. The auto-generated output just goes unheard — no overhead, no errors:
+
+```typescript
+export class CounterComponent {
+  count = model(0); // works as plain writable signal; no parent required
+
+  increment() { this.count.update(n => n + 1); }
+  reset()     { this.count.set(0); }
+}
+```
+
+This is useful when you want to keep a component self-contained *today* but allow a parent to take control via two-way binding *later*, without changing the component's internals.
+
+#### 4. Used inside `computed()` and `effect()`
+
+`model()` is a readable signal, so derived signals and effects react to it just like any other signal:
+
+```typescript
+export class CartComponent {
+  quantity  = model(1);
+  unitPrice = signal(9.99);
+
+  total = computed(() => this.quantity() * this.unitPrice()); // reacts to model changes
+
+  constructor() {
+    effect(() => {
+      console.log('Quantity changed to', this.quantity()); // runs on every update
+    });
+  }
+}
+```
+
+#### 5. Subscribing like an Observable
+
+`ModelSignal` exposes a `.subscribe()` method, so you can integrate it with any RxJS-based code:
+
+```typescript
+export class SearchComponent implements OnInit {
+  query = model('');
+
+  ngOnInit() {
+    // Treat the model as an observable stream
+    this.query.subscribe(value => {
+      console.log('Query is now:', value);
+    });
+  }
+}
+```
+
+For richer RxJS pipelines, convert it first with `toObservable()`:
+
+```typescript
+import { toObservable } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+export class SearchComponent {
+  query = model('');
+
+  constructor() {
+    toObservable(this.query).pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+    ).subscribe(value => this.search(value));
+  }
+
+  search(term: string) { /* call API */ }
+}
+```
+
+#### Summary — when to reach for `model()` vs `signal()`
+
+| Scenario | Use |
+|----------|-----|
+| Child value must stay in sync with parent | `model()` with `[(x)]` |
+| Parent seeds value but doesn't need updates | `model()` with `[x]` (or `input()`) |
+| Parent only wants to react to changes | `model()` with `(xChange)` (or `output()`) |
+| Purely internal state, no parent involvement | `signal()` (clearer intent) or `model()` if you *might* expose it later |
+| Value inside `computed()` / `effect()` | Either — both are readable signals |
 
 ---
 
@@ -823,7 +948,7 @@ export class NavbarComponent {
 |---------|-------------|-------------|
 | `signal()` | Writable reactive value | Local state, shared service state |
 | `computed()` | Derived read-only signal | Any value that depends on other signals |
-| `model()` | Two-way signal between parent/child | Custom form controls, reusable inputs |
+| `model()` | Two-way signal between parent/child; also usable as local state, one-way binding, and in `computed()`/`effect()` | Custom form controls, reusable inputs, any component that exposes a value the parent *may* want to control |
 | `effect()` | Side effect when signals change | localStorage, logging, DOM operations, bridging to RxJS |
 | `viewChild()` | DOM/component reference as signal | Auto-focus, calling child methods, DOM measurements |
 | `toSignal()` | Observable → signal | Using RxJS streams in templates without `async` pipe |
