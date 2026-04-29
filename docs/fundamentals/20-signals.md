@@ -207,33 +207,79 @@ size = model<'small' | 'medium' | 'large'>('medium');
 
 ### Real-world example — custom input component
 
+This rating component is a good use case for `model()` because:
+- The **parent** owns the rating value and needs to read it (e.g., to save to an API)
+- The **child** controls how the stars look and how the user interacts with them
+- Both sides need to stay in sync — `model()` handles this automatically with no extra boilerplate
+
+**Child component:**
+
 ```typescript
 // app-rating.component.ts
+import { Component, model } from '@angular/core';
+
 @Component({
   selector: 'app-rating',
+  standalone: true,
   template: `
     @for (star of stars; track star) {
       <span
+        class="star"
         (click)="rate(star)"
         [class.filled]="star <= rating()">★</span>
     }
-  `
+  `,
+  styles: [`
+    .star { font-size: 2rem; cursor: pointer; color: #ccc; }
+    .filled { color: gold; }
+  `]
 })
 export class RatingComponent {
   rating = model(0); // two-way: parent can set it, user can change it
   stars = [1, 2, 3, 4, 5];
 
   rate(star: number) {
-    this.rating.set(star); // auto-notifies parent
+    this.rating.set(star); // notifies parent automatically via ratingChange output
   }
 }
 ```
 
-```html
-<!-- parent -->
-<app-rating [(rating)]="productRating" />
-<p>You rated: {{ productRating() }}</p>
+**Parent component:**
+
+```typescript
+// product-detail.component.ts
+import { Component, signal } from '@angular/core';
+import { RatingComponent } from './app-rating.component';
+
+@Component({
+  selector: 'app-product-detail',
+  standalone: true,
+  imports: [RatingComponent],
+  template: `
+    <h2>{{ product.name }}</h2>
+    <app-rating [(rating)]="productRating" />
+    <p>You rated: {{ productRating() }} / 5</p>
+    <button (click)="saveRating()">Save</button>
+  `
+})
+export class ProductDetailComponent {
+  product = { name: 'Wireless Headphones' };
+  productRating = signal(0); // starts at 0, updated by child via model()
+
+  saveRating() {
+    console.log('Saving rating:', this.productRating()); // read the signal directly
+    // e.g. this.productService.saveRating(this.productRating())
+  }
+}
 ```
+
+**What happens step by step:**
+1. `productRating` is a signal in the parent — starts at `0`
+2. `[(rating)]="productRating"` binds it two-ways to the child's `model()`
+3. User clicks a star → `rate()` calls `this.rating.set(star)`
+4. Angular automatically fires the `ratingChange` output — the parent's `productRating` signal updates
+5. Both `<app-rating>` (star highlights) and `<p>You rated: ...</p>` re-render with the new value
+6. The parent can read `productRating()` at any time — for example, when the user clicks Save
 
 ---
 
