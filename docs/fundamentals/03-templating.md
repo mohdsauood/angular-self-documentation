@@ -28,11 +28,97 @@ Two-way binding combines property and event binding to sync data both ways.
 - Banana in a box syntax: `[()]`
 - Two-way: component ↔ template
 
-### Structural Directives
-Structural directives add or remove elements from DOM based on conditions.
-- `*ngIf="condition"` - shows/hides elements
-- `*ngFor="let item of items"` - repeats elements for each item in array
-- `*ngSwitch` - shows one element from multiple choices
+#### Is two-way binding still relevant with signals?
+**Yes, but with signals you have better alternatives.**
+
+**Old approach (two-way binding):**
+```typescript
+// Component
+username = '';
+```
+```html
+<!-- Template -->
+<input [(ngModel)]="username">
+```
+
+**Modern approach (signals):**
+```typescript
+// Component
+import { signal } from '@angular/core';
+username = signal('');
+```
+```html
+<!-- Template -->
+<input [value]="username()" (input)="username.set($event.target.value)">
+<!-- Or use model() for two-way -->
+<input [(ngModel)]="username()">
+```
+
+**New best approach (Angular v17.2+ with model signals):**
+```typescript
+// Component
+import { model } from '@angular/core';
+username = model('');  // Two-way signal!
+```
+```html
+<!-- Template -->
+<input [(ngModel)]="username">
+```
+
+**Summary:**
+- `[(ngModel)]` still works and is fine for forms
+- Signals give you better reactivity and computed values
+- `model()` combines signals with two-way binding (best of both)
+- Use signals for component state, `[(ngModel)]` for simple form inputs
+
+### Control Flow (Modern Syntax)
+Control flow syntax controls what elements appear in the DOM.
+
+#### @if (conditional rendering)
+```html
+@if (isLoggedIn) {
+  <p>Welcome back!</p>
+} @else {
+  <p>Please log in</p>
+}
+```
+
+#### @for (loops)
+```html
+@for (item of items; track item.id) {
+  <div>{{ item.name }}</div>
+} @empty {
+  <p>No items found</p>
+}
+```
+
+#### @switch (multiple conditions)
+```html
+@switch (status) {
+  @case ('active') { <span>Active</span> }
+  @case ('inactive') { <span>Inactive</span> }
+  @default { <span>Unknown</span> }
+}
+```
+
+#### Old syntax (still works but avoid in new code)
+- `*ngIf="condition"` → use `@if` instead
+- `*ngFor="let item of items"` → use `@for` instead
+- `*ngSwitch` → use `@switch` instead
+
+### Quick comparison: Old vs New
+
+| Old (before v17) | New (v17+) |
+|------------------|------------|
+| `<div *ngIf="show">Hi</div>` | `@if (show) { <div>Hi</div> }` |
+| `<div *ngFor="let x of items">{{x}}</div>` | `@for (x of items; track x.id) { <div>{{x}}</div> }` |
+| `<div [ngSwitch]="status">` | `@switch (status) { }` |
+
+**Why the new syntax is better:**
+- No need to import `CommonModule` for control flow
+- Cleaner, more readable
+- Better TypeScript support
+- `track` is built-in (better performance)
 
 ## Why it matters
 - Keeps UI dynamic and connected to component data
@@ -46,3 +132,5 @@ Template = HTML that displays component data and sends user events back to compo
 - Putting complex logic directly in template (keep templates clean, logic in component)
 - Confusing `[]` (property binding) with `()` (event binding)
 - Forgetting to import `FormsModule` when using `[(ngModel)]`
+- Using old `*ngIf`, `*ngFor` syntax in new projects (use `@if`, `@for` instead)
+- Forgetting `track` in `@for` loops (required for performance)

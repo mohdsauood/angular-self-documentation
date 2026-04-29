@@ -9,10 +9,11 @@ Goal:
 - Use Feynman Technique: explain as if teaching a beginner.
 
 ## Important Files
-- **[DOCUMENTATION-TONE-GUIDE.md](DOCUMENTATION-TONE-GUIDE.md)** → Read this first! It defines how all documentation should be written in your style.
+- **[TOPIC-INDEX.md](TOPIC-INDEX.md)** → Quick index of all topics
+- **[DOCUMENTATION-TONE-GUIDE.md](DOCUMENTATION-TONE-GUIDE.md)** → Writing style guide (AI reference)
 
 ## Structure
-- `fundamentals/` → short definitions and core concepts
+- `fundamentals/` → short definitions and core concepts (12 files)
 - `roadmap/` → what to study from beginner to senior
 
 ## How to use

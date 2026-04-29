@@ -12,10 +12,19 @@ class MyComponent {
 }
 ```
 
-### With DI (Angular way - good)
+### With DI - Modern way (Angular v14+ - best)
+```typescript
+import { inject } from '@angular/core';
+
+class MyComponent {
+  private userService = inject(UserService); // Modern inject() function
+}
+```
+
+### With DI - Old way (still works)
 ```typescript
 class MyComponent {
-  constructor(private userService: UserService) {} // Angular gives it to you
+  constructor(private userService: UserService) {} // Constructor injection
 }
 ```
 
@@ -41,11 +50,129 @@ Angular's injector gives you the service instance when you ask for it.
 - Easy to test (you can replace real service with fake one)
 - Loose coupling (components don't know how service is created)
 
+## `inject()` function vs Constructor Injection — Old and New
+
+### Background — why constructor injection existed
+
+#### The old way (still works)
+```typescript
+import { Component } from '@angular/core';
+import { UserService } from './user.service';
+import { Router } from '@angular/router';
+
+@Component({ ... })
+export class UserComponent {
+  constructor(
+    private userService: UserService,
+    private router: Router
+  ) {}
+}
+```
+
+**How it worked:** TypeScript emitted metadata about the constructor parameter types, and Angular's DI system read that metadata to know what to inject. The `private userService: UserService` shorthand declared the property AND typed it for DI all in one.
+
+**Why it became a problem:**
+- Required TypeScript `experimentalDecorators` and `emitDecoratorMetadata` compiler options
+- Verbose when you have many dependencies
+- Could not be used outside of class constructors (no DI in standalone functions like route guards in the old syntax)
+- Made testing slightly awkward (you had to construct the class with all dependencies)
+
+---
+
+### The new way — `inject()` function (Angular v14+)
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { UserService } from './user.service';
+import { Router } from '@angular/router';
+
+@Component({ ... })
+export class UserComponent {
+  private userService = inject(UserService);
+  private router = inject(Router);
+}
+```
+
+**How it works:** `inject()` reads from Angular's current injection context — if you call it during class field initialization (which runs at construction time), Angular knows what injector to use.
+
+---
+
+### Why `inject()` is better
+
+| | Constructor injection (old) | `inject()` (new) |
+|---|---|---|
+| Readability | All deps in constructor signature (gets long) | Field-level, each on its own line |
+| Works in standalone functions | ❌ No | ✅ Yes (route guards, `ResolveFn`, etc.) |
+| Works in base classes | ❌ Messy (must pass to `super()`) | ✅ Clean (just call `inject()`) |
+| Migration to standalone | Needs refactor | Works out of the box |
+| Required compiler options | `emitDecoratorMetadata` | Not needed |
+
+**Example — base class nightmare with constructor injection:**
+```typescript
+// Old — child must pass everything to base class
+export class BaseComponent {
+  constructor(protected userService: UserService) {}
+}
+export class UserProfileComponent extends BaseComponent {
+  constructor(userService: UserService, private router: Router) {
+    super(userService); // must manually pass up
+  }
+}
+
+// New — inject() in base class, child is clean
+export class BaseComponent {
+  protected userService = inject(UserService);
+}
+export class UserProfileComponent extends BaseComponent {
+  private router = inject(Router); // no super() gymnastics
+}
+```
+
+**Example — `inject()` in standalone functions (impossible with old way):**
+```typescript
+// Modern route guard (functional) — only possible with inject()
+export const authGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  return authService.isLoggedIn() ? true : router.parseUrl('/login');
+};
+```
+
+---
+
+### When can you call `inject()`?
+
+`inject()` can only be called in an **injection context**:
+- During class field initialization (`private x = inject(X)`)
+- Inside a constructor
+- Inside a factory function provided to Angular
+
+**Not allowed:**
+```typescript
+export class MyComponent {
+  private service!: UserService;
+
+  ngOnInit() {
+    this.service = inject(UserService); // ❌ ERROR — not in injection context
+  }
+}
+```
+
+**Fix:**
+```typescript
+export class MyComponent {
+  private service = inject(UserService); // ✅ field initializer = injection context
+}
+```
+
+---
+
 ## Quick memory line
-DI = ask Angular for a service in constructor, Angular gives it to you.
+DI = ask Angular for a service using `inject()` or constructor, Angular gives it to you. Prefer `inject()` in new code — cleaner, more flexible, works in functions.
 
 ## Common mistakes
 - Creating service instances manually with `new`
 - Forgetting `@Injectable()` decorator on services
 - Putting too many responsibilities in one service
-- Confusing DI with inheritance (they are different concepts)
+- Calling `inject()` inside lifecycle hooks (`ngOnInit`, etc.) — call it in field initializers instead
+- Using constructor injection in new code (prefer `inject()` function)
