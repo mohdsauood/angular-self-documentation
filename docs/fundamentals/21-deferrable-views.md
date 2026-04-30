@@ -2,7 +2,7 @@
 
 ## What is `@defer`?
 
-`@defer` is an Angular template block (introduced in Angular 17) that lets you **lazily load a part of your template** — including the component's code — only when a certain condition is met, instead of loading everything upfront.
+`@defer` is an Angular template block (stable since Angular 17, with enhancements in Angular 21) that lets you **lazily load a part of your template** — including the component's code — only when a certain condition is met, instead of loading everything upfront.
 
 ```html
 @defer {
@@ -89,6 +89,14 @@ Downloads when the browser is idle — not busy with anything else. This is the 
 
 ```html
 @defer (on idle) {
+  <app-analytics-widget />
+}
+```
+
+In **Angular 21**, you can optionally specify a timeout — if the browser never becomes idle within that time, it loads anyway:
+
+```html
+@defer (on idle(3000)) {
   <app-analytics-widget />
 }
 ```

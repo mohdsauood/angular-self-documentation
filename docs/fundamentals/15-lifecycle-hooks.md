@@ -156,6 +156,69 @@ export class CardComponent {
 
 ---
 
+## `afterEveryRender` and `afterNextRender` — modern DOM hooks (Angular 20+)
+
+These are function-based alternatives to `ngAfterViewInit` / `ngAfterViewChecked`, introduced in Angular 17 and renamed/stabilised in Angular 20.
+
+| Function | When it runs |
+|---|---|
+| `afterNextRender()` | Once after the **next** render cycle — like `ngAfterViewInit` |
+| `afterEveryRender()` | After **every** render cycle — like `ngAfterViewChecked` |
+
+```typescript
+import { Component, afterNextRender, afterEveryRender, ElementRef, viewChild } from '@angular/core';
+
+@Component({ selector: 'app-chart', template: `<canvas #canvas></canvas>` })
+export class ChartComponent {
+  canvasRef = viewChild.required<ElementRef>('canvas');
+
+  constructor() {
+    afterNextRender(() => {
+      // Safe to access DOM — runs once after first render
+      const ctx = this.canvasRef().nativeElement.getContext('2d');
+      this.initChart(ctx);
+    });
+  }
+}
+```
+
+**Why use these over `ngAfterViewInit`?**
+- Works correctly in zoneless change detection
+- No class interface to implement
+- `afterNextRender` correctly handles SSR (server-side rendering) — it won't run on the server
+- More explicit about timing (next vs every render)
+
+---
+
+## `DestroyRef` — modern cleanup (Angular 16+)
+
+Instead of implementing `ngOnDestroy`, inject `DestroyRef` and register cleanup callbacks:
+
+```typescript
+import { Component, inject, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+@Component({ selector: 'app-timer', template: '' })
+export class TimerComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private userService = inject(UserService);
+
+  ngOnInit(): void {
+    // Option 1: takeUntilDestroyed operator — auto-unsubscribes when component destroys
+    this.userService.getUsers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(users => this.users = users);
+
+    // Option 2: onDestroy callback
+    this.destroyRef.onDestroy(() => {
+      console.log('Component is being destroyed');
+    });
+  }
+}
+```
+
+---
+
 ## Why it matters
 - `ngOnInit` gives you a safe place to fetch data and set up the component
 - `ngOnDestroy` prevents memory leaks from open subscriptions

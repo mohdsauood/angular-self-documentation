@@ -19,31 +19,44 @@ A button on its own is not an input control in the form sense (it is a trigger).
 
 Forms are also how you collect user input, validate it, and send it to your application or server.
 
-## Two types of Angular forms
+## Three approaches to Angular forms (as of Angular 21)
 
-### Template-Driven Forms
+### 1. Template-Driven Forms
 Template-driven forms put most logic in the template.
 - Easier for simple forms
 - Use `[(ngModel)]` for two-way binding
 - Example: login form with username and password
-- **Note**: Less common in modern Angular (prefer Reactive Forms)
+- **Note**: Less common in modern Angular (prefer Reactive Forms or Signal Forms)
 
-### Reactive Forms (Recommended)
+### 2. Reactive Forms (Widely used)
 Reactive forms put logic in the component class.
 - Better for complex forms with lots of validation
 - More control and easier to test
 - Type-safe with TypeScript
 - Example: registration form with many fields and custom validators
 
-### Modern approach: Signals with Reactive Forms
-Angular v16+ supports signals for better reactivity.
-```typescript
-import { signal } from '@angular/core';
+### 3. Signal Forms — Angular 21 experimental
+Angular 21 introduced **Signal Forms** — a new experimental API in `@angular/forms/signals` that replaces `FormGroup`/`FormControl` with a fully signal-based approach.
 
-username = signal('');
-password = signal('');
+```typescript
+import { form, field } from '@angular/forms/signals';
+import { required, minLength } from '@angular/forms/signals/validators';
+
+export class LoginComponent {
+  loginForm = form({
+    email: field('', { validators: [required, minLength(5)] }),
+    password: field('', { validators: [required] }),
+  });
+
+  submit() {
+    if (this.loginForm.valid()) {
+      console.log(this.loginForm.value()); // { email: '...', password: '...' }
+    }
+  }
+}
 ```
-Use with reactive forms for best experience.
+
+> This is **experimental** in Angular 21. For full Signal Forms documentation including `FieldState`, validators, and async validation, see [20-signals.md](20-signals.md#signal-forms-angular-21-experimental).
 
 ## Important form concepts
 

@@ -21,7 +21,7 @@ this.count.update(n => n + 1); // based on previous value
 <p>{{ count() }}</p>  <!-- auto-updates when count changes -->
 ```
 
-> Signals were introduced in Angular 16 (developer preview) and became stable in Angular 17. They replace most uses of `ngOnChanges`, `BehaviorSubject`, and manual change detection.
+> Signals were introduced in Angular 16 (developer preview), became stable in Angular 17, and are the **primary reactivity model** in Angular 21. `linkedSignal`, `toSignal`, and `toObservable` are all stable. Signal Forms (`@angular/forms/signals`) are experimental in Angular 21. Signals replace most uses of `ngOnChanges`, `BehaviorSubject`, and manual change detection.
 
 ---
 
@@ -601,101 +601,215 @@ items = viewChildren<ElementRef>('item'); // Signal<readonly ElementRef[]>
 
 ---
 
-## Signals with Reactive Forms
+## Signal Forms (Angular 21+)
 
-Reactive forms and signals can work together. The key bridge is `toSignal()` which converts an Observable into a signal.
+Angular 21 shipped an **experimental** native signal-based forms API. It lives in `@angular/forms/signals` and is completely separate from `FormControl`/`FormGroup`. You define your data model as a plain signal, then Angular does the rest.
 
-### `toSignal()` — convert Observable to signal
+> **Experimental** — the API may change. Don't use it in production without understanding the risk. For production apps today, reactive forms with `toSignal()` is still the safe choice.
+
+---
+
+### How it works — 5-step mental model
+
+1. **Create a model signal** — a regular `signal<T>()` holding your form's data shape
+2. **Call `form(modelSignal)`** — get back a **FieldTree** that mirrors your model's structure
+3. **Bind inputs with `[formField]`** — the directive does two-way sync between the input and the field
+4. **Read state via `field()`** — calling a field returns a `FieldState` object with reactive signals
+5. **Add validation in the schema** — pass a schema function as the second arg to `form()`
+
+---
+
+### Basic example — login form
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { form, FormField, required, email } from '@angular/forms/signals';
+
+interface LoginData {
+  email:    string;
+  password: string;
+}
 
 @Component({
-  selector: 'app-search-form',
-  imports: [ReactiveFormsModule],
+  selector: 'app-login',
+  imports: [FormField],  // must import FormField directive
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <input [formControl]="searchControl" placeholder="Search...">
-    <p>Results for: {{ searchQuery() }}</p>
-    <p>Form valid: {{ isValid() }}</p>
+    <form (ngSubmit)="onSubmit()">
+      <input type="email"    [formField]="loginForm.email"    />
+      <input type="password" [formField]="loginForm.password" />
+
+      <!-- read validation state -->
+      @if (loginForm.email().touched() && !loginForm.email().valid()) {
+        @for (err of loginForm.email().errors(); track err.kind) {
+          <p class="error">{{ err.message }}</p>
+        }
+      }
+
+      <button type="submit" [disabled]="!loginForm.email().valid() || !loginForm.password().valid()">
+        Log in
+      </button>
+    </form>
+
+    <!-- read the live value -->
+    <p>Email: {{ loginForm.email().value() }}</p>
   `
 })
-export class SearchFormComponent {
-  private fb = inject(FormBuilder);
+export class LoginComponent {
+  // 1. plain signal for the data model
+  loginModel = signal<LoginData>({ email: '', password: '' });
 
-  searchControl = this.fb.control('', Validators.minLength(2));
+  // 2. form() creates the FieldTree
+  loginForm = form(this.loginModel, (schemaPath) => {
+    required(schemaPath.email,    { message: 'Email is required' });
+    email(schemaPath.email,       { message: 'Enter a valid email address' });
+    required(schemaPath.password, { message: 'Password is required' });
+  });
 
-  // Convert reactive form Observable → signal
-  searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
-  isValid = toSignal(this.searchControl.statusChanges.pipe(
-    map(status => status === 'VALID')
-  ), { initialValue: false });
+  onSubmit() {
+    const credentials = this.loginModel(); // just read the signal
+    console.log('Submitting', credentials);
+  }
 }
 ```
 
-### `toObservable()` — convert signal to Observable
+---
+
+### `FieldState` — what signals are on each field
+
+When you call a field as a function (e.g. `loginForm.email()`), you get a `FieldState` object:
+
+| Signal | What it tells you |
+|--------|-------------------|
+| `value()` | Current field value |
+| `valid()` | `true` if all validators pass |
+| `touched()` | `true` if user focused + blurred the field |
+| `dirty()` | `true` if user changed the value |
+| `disabled()` | `true` if field is disabled |
+| `readonly()` | `true` if field is readonly |
+| `pending()` | `true` if async validation in progress |
+| `errors()` | Array of `{ kind, message }` validation errors |
+
+```typescript
+// Programmatically set a value
+loginForm.email().value.set('alice@example.com');
+
+// The model signal also updates automatically
+console.log(this.loginModel().email); // 'alice@example.com'
+```
+
+---
+
+### Validators available
+
+Import them from `@angular/forms/signals`:
+
+```typescript
+import {
+  required, email, min, max, minLength, maxLength, pattern, debounce
+} from '@angular/forms/signals';
+
+loginForm = form(this.model, (s) => {
+  required(s.name);
+  minLength(s.name, 2);
+  maxLength(s.name, 50);
+  required(s.age);
+  min(s.age, 18);
+  max(s.age, 120);
+  email(s.email);
+  pattern(s.phone, /^\d{10}$/);
+  debounce(s.email, 500); // debounce validation by 500ms
+});
+```
+
+---
+
+### Supported input types
+
+`[formField]` works with all standard HTML inputs out of the box:
+
+```html
+<!-- text, email, password, etc. -->
+<input type="text"     [formField]="form.name" />
+<input type="email"    [formField]="form.email" />
+
+<!-- number — auto converts string ↔ number -->
+<input type="number"   [formField]="form.age" />
+
+<!-- checkbox — binds to boolean -->
+<input type="checkbox" [formField]="form.agreeToTerms" />
+
+<!-- radio — binds to the value attribute of the selected button -->
+<input type="radio" value="free"    [formField]="form.plan" />
+<input type="radio" value="premium" [formField]="form.plan" />
+
+<!-- select -->
+<select [formField]="form.country">
+  <option value="">Choose...</option>
+  <option value="us">United States</option>
+</select>
+
+<!-- textarea -->
+<textarea [formField]="form.message"></textarea>
+```
+
+---
+
+### The `toSignal()` bridge (for reactive forms you already have)
+
+If you still use `FormControl`/`FormGroup` (reactive forms), bridge to signals with `toSignal()`:
+
+```typescript
+form = inject(FormBuilder).group({
+  query:    ['', [Validators.required, Validators.minLength(2)]],
+  category: ['all']
+});
+
+// ONE signal for all form values
+formValue = toSignal(this.form.valueChanges, {
+  initialValue: this.form.value
+});
+
+formValid = toSignal(
+  this.form.statusChanges.pipe(map(s => s === 'VALID')),
+  { initialValue: this.form.valid }
+);
+```
+
+```html
+<p>Query: {{ formValue().query }}</p>
+<button [disabled]="!formValid()">Submit</button>
+```
+
+---
+
+### `toObservable()` — signal → Observable (for RxJS pipelines)
 
 ```typescript
 import { toObservable } from '@angular/core/rxjs-interop';
 
 searchQuery = signal('');
 
-// Use when a service expects an Observable
-searchResults$ = toObservable(this.searchQuery).pipe(
-  debounceTime(300),
-  distinctUntilChanged(),
-  switchMap(q => this.searchService.search(q))
+results = toSignal(
+  toObservable(this.searchQuery).pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    switchMap(q => this.http.get<Result[]>(`/api/search?q=${q}`))
+  ),
+  { initialValue: [] }
 );
 ```
 
-### Full example — search form with signals + reactive forms
+---
 
-```typescript
-import { Component, inject, computed } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { SearchService } from './search.service';
+### Quick decision guide
 
-@Component({
-  selector: 'app-search',
-  imports: [ReactiveFormsModule, AsyncPipe],
-  template: `
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <input formControlName="query" placeholder="Search...">
-      <input formControlName="category" placeholder="Category">
-      <button type="submit" [disabled]="!formValid()">Search</button>
-    </form>
-
-    @if (formValid()) {
-      <p>Searching for: {{ queryValue() }} in {{ categoryValue() }}</p>
-    }
-  `
-})
-export class SearchComponent {
-  private fb = inject(FormBuilder);
-  private searchService = inject(SearchService);
-
-  form = this.fb.group({
-    query:    ['', [Validators.required, Validators.minLength(2)]],
-    category: ['all']
-  });
-
-  // Signals from form controls
-  queryValue    = toSignal(this.form.get('query')!.valueChanges,    { initialValue: '' });
-  categoryValue = toSignal(this.form.get('category')!.valueChanges, { initialValue: 'all' });
-  formValid     = toSignal(this.form.statusChanges.pipe(
-    map(s => s === 'VALID')
-  ), { initialValue: false });
-
-  submit() {
-    if (this.form.valid) {
-      console.log(this.form.value);
-    }
-  }
-}
-```
+| Your situation | What to use |
+|---------------|------------|
+| New app on Angular 21+, comfortable with experimental APIs | Signal Forms (`@angular/forms/signals`) |
+| Existing app with reactive forms | Reactive forms + `toSignal(form.valueChanges, { initialValue: form.value })` |
+| Simple UI with no validators needed | Pure signals + event binding |
+| Need RxJS pipeline (debounce, switchMap) | `toObservable(signal).pipe(...)` → `toSignal()` |
 
 ---
 
@@ -942,6 +1056,258 @@ export class NavbarComponent {
 
 ---
 
+## API calls with signals
+
+Yes — signals can handle API calls, and it is done in real-world apps. There are three approaches depending on which Angular version you're on.
+
+---
+
+### Approach 1 — `toSignal()` (most common today)
+
+`toSignal()` converts any Observable (including HTTP calls) into a read-only signal. This is the bread-and-butter approach used in production apps right now.
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+interface User { id: number; name: string; email: string; }
+
+@Component({
+  selector: 'app-users',
+  template: `
+    @if (users().length) {
+      @for (user of users(); track user.id) {
+        <p>{{ user.name }}</p>
+      }
+    } @else {
+      <p>Loading...</p>
+    }
+  `
+})
+export class UsersComponent {
+  private http = inject(HttpClient);
+
+  // HTTP Observable → signal. No subscribe, no async pipe, no unsubscribe.
+  users = toSignal(
+    this.http.get<User[]>('/api/users'),
+    { initialValue: [] }
+  );
+}
+```
+
+**`initialValue`** — what the signal holds before the HTTP response arrives. Without it the signal is `undefined` until the request completes.
+
+---
+
+### Approach 2 — `toSignal()` + reactive params (re-fetch when ID changes)
+
+This is the real-world pattern for a detail page where the ID comes from a signal:
+
+```typescript
+import { Component, inject, input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-user-detail',
+  template: `
+    @if (user()) {
+      <h2>{{ user()!.name }}</h2>
+      <p>{{ user()!.email }}</p>
+    } @else {
+      <p>Loading...</p>
+    }
+  `
+})
+export class UserDetailComponent {
+  userId = input.required<string>(); // route param via withComponentInputBinding
+
+  private http = inject(HttpClient);
+
+  // When userId changes → cancel previous request → fetch new user
+  user = toSignal(
+    toObservable(this.userId).pipe(
+      switchMap(id => this.http.get<User>(`/api/users/${id}`))
+    )
+  );
+}
+```
+
+**What happens here:**
+1. `userId` is a signal (from a route input)
+2. `toObservable()` turns it into an Observable
+3. `switchMap` cancels the previous request and fires a new one every time `userId` changes
+4. `toSignal()` converts the result back into a signal for the template
+
+This pattern replaces the old `ngOnChanges` + subscribe boilerplate entirely.
+
+---
+
+### Approach 3 — `resource()` (Angular 19+, modern)
+
+Angular 19 introduced `resource()` — a first-class API for async data fetching with signals. It is built specifically for API calls.
+
+```typescript
+import { Component, signal, resource, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+
+@Component({
+  selector: 'app-user-detail',
+  template: `
+    @if (userResource.isLoading()) {
+      <p>Loading...</p>
+    } @else if (userResource.error()) {
+      <p>Error: {{ userResource.error() }}</p>
+    } @else {
+      <h2>{{ userResource.value()?.name }}</h2>
+    }
+  `
+})
+export class UserDetailComponent {
+  userId = signal('1');
+
+  private http = inject(HttpClient);
+
+  userResource = resource({
+    request: () => this.userId(),   // reactive — re-runs when userId changes
+    loader: ({ request: id }) =>
+      firstValueFrom(this.http.get<User>(`/api/users/${id}`))
+  });
+}
+```
+
+`resource()` automatically gives you:
+- `resource.value()` — the fetched data as a signal
+- `resource.isLoading()` — boolean signal, true while fetching
+- `resource.error()` — error signal if request failed
+- `resource.status()` — `'idle' | 'loading' | 'resolved' | 'error' | 'reloading'`
+- `resource.reload()` — method to re-trigger the fetch manually
+
+### `httpResource()` — Angular 19.2+
+
+`httpResource()` is `resource()` but wired directly to `HttpClient` — no need for `firstValueFrom`:
+
+```typescript
+import { httpResource } from '@angular/common/http';
+
+@Component({ ... })
+export class UserDetailComponent {
+  userId = signal('1');
+
+  // Cleaner — no firstValueFrom needed
+  userResource = httpResource<User>(
+    () => `/api/users/${this.userId()}`  // URL re-computed when userId changes
+  );
+}
+```
+
+```html
+@if (userResource.isLoading()) {
+  <app-skeleton />
+} @else if (userResource.error()) {
+  <p>Failed to load. <button (click)="userResource.reload()">Retry</button></p>
+} @else {
+  <h2>{{ userResource.value()?.name }}</h2>
+}
+```
+
+---
+
+### Full real-world service example — signals + HTTP
+
+```typescript
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, switchMap } from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
+
+interface Product { id: number; name: string; price: number; category: string; }
+
+@Injectable({ providedIn: 'root' })
+export class ProductService {
+  private http = inject(HttpClient);
+
+  // Reactive filters — changing these re-fetches automatically
+  category   = signal('all');
+  searchQuery = signal('');
+
+  // When either filter changes, re-fetch
+  products = toSignal(
+    toObservable(
+      // computed signal: re-emits whenever category or searchQuery changes
+      computed(() => ({ category: this.category(), q: this.searchQuery() }))
+    ).pipe(
+      switchMap(filters =>
+        this.http.get<Product[]>('/api/products', { params: filters }).pipe(
+          catchError(() => of([]))  // fallback on error
+        )
+      )
+    ),
+    { initialValue: [] as Product[] }
+  );
+
+  // Derived signals from the products list
+  totalCount = computed(() => this.products().length);
+  hasResults = computed(() => this.products().length > 0);
+}
+```
+
+```typescript
+// In any component — reads reactively
+@Component({
+  template: `
+    <input [value]="products.searchQuery()"
+           (input)="products.searchQuery.set($any($event.target).value)">
+
+    <select (change)="products.category.set($any($event.target).value)">
+      <option value="all">All</option>
+      <option value="electronics">Electronics</option>
+    </select>
+
+    <p>{{ products.totalCount() }} results</p>
+
+    @for (p of products.products(); track p.id) {
+      <app-product-card [product]="p" />
+    }
+  `
+})
+export class ProductListComponent {
+  products = inject(ProductService);
+}
+```
+
+---
+
+### Is it done in real-world apps?
+
+Yes. Here is how the industry is moving:
+
+| Angular version | Common pattern |
+|----------------|---------------|
+| Before v16 | Subscribe + async pipe + BehaviorSubject |
+| v16–v18 | `toSignal()` wrapping HTTP Observables |
+| v19+ | `resource()` / `httpResource()` for new code |
+
+The `toSignal()` approach is already mainstream in 2025/2026 production apps. `resource()` / `httpResource()` are newer and you will see them increasingly in new projects. The old subscribe-and-assign pattern still works but is considered legacy.
+
+---
+
+### Which approach to use
+
+| Scenario | Use |
+|----------|-----|
+| Simple fetch on component load | `toSignal(this.http.get(...))` |
+| Re-fetch when a signal/param changes | `toObservable(signal).pipe(switchMap(...))` wrapped in `toSignal()` |
+| Full loading/error/reload state needed | `resource()` or `httpResource()` (Angular 19+) |
+| Complex pipe chain (retry, cache, transform) | RxJS pipe + `toSignal()` at the end |
+
+---
+
 ## Summary
 
 | Concept | What it does | When to use |
@@ -953,6 +1319,8 @@ export class NavbarComponent {
 | `viewChild()` | DOM/component reference as signal | Auto-focus, calling child methods, DOM measurements |
 | `toSignal()` | Observable → signal | Using RxJS streams in templates without `async` pipe |
 | `toObservable()` | Signal → Observable | Passing signal value to a service that needs Observable |
+| `resource()` | Async data fetch with built-in loading/error signals | API calls in Angular 19+ |
+| `httpResource()` | `resource()` wired to HttpClient directly | Simple API calls in Angular 19.2+ |
 
 ## Quick memory line
 Signals = reactive values Angular tracks precisely. `signal` reads/writes, `computed` derives, `model` syncs parent-child, `effect` runs side effects, `viewChild` queries the DOM — all automatic, no Zone.js needed.

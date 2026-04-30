@@ -323,7 +323,7 @@ product = this.route.snapshot.data['product'] as Product;
 
 ---
 
-### Route Parameters with `@Input` (Modern Way — `withComponentInputBinding`)
+### Route Parameters with `input()` (Modern Way — `withComponentInputBinding`)
 
 The **old way** to read route params was via `ActivatedRoute`:
 ```typescript
@@ -340,12 +340,12 @@ constructor() {
 }
 ```
 
-The **new way** — bind the route param directly to an `@Input` (Angular v16+):
+The **new way** — bind the route param directly to a signal `input()` (Angular 16+, `input()` stable in Angular 19):
 ```typescript
 // New way — super clean
 @Component({ ... })
 export class UserComponent {
-  @Input() id!: string; // 'id' matches the :id in the route path
+  id = input.required<string>(); // 'id' matches the :id in the route path
 }
 ```
 
@@ -360,21 +360,12 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-With signals (`input()` is cleaner):
-```typescript
-@Component({ ... })
-export class UserComponent {
-  id = input.required<string>(); // $route/:id maps directly here
-}
-```
-
 **Summary — old vs new for route params:**
 
 | Approach | Code |
 |---|---|
 | Old (subscribe) | `this.route.params.subscribe(p => this.id = p['id'])` |
 | Old (snapshot) | `this.id = this.route.snapshot.paramMap.get('id')` |
-| New (`@Input`) | `@Input() id!: string` + `withComponentInputBinding()` |
 | New (signal input) | `id = input.required<string>()` + `withComponentInputBinding()` |
 
 ---

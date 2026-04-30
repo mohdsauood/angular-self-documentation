@@ -1,6 +1,6 @@
-# Angular Self Documentation
+# Angular Self Documentation (Angular 21)
 
-This folder is your personal Angular knowledge base.
+This folder is your personal Angular knowledge base. All documentation targets **Angular 21** (current stable: 21.x, 2025-2026).
 
 Goal:
 - Write each topic in your own words.

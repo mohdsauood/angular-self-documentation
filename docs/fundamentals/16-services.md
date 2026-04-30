@@ -164,7 +164,52 @@ export class CartIconComponent {
 
 ---
 
-## Why it matters
+## Modern async data fetching with `resource()` and `httpResource()` (Angular 19+)
+
+Angular 19 introduced **`resource()`** and **`httpResource()`** as experimental APIs that replace the `ngOnInit` + `subscribe` + manual loading/error state pattern.
+
+### `httpResource()` — signal-based HTTP (Angular 19.2+, experimental)
+
+```typescript
+import { httpResource } from '@angular/core/http';
+
+@Component({ selector: 'app-users', template: `
+  @if (users.isLoading()) { <p>Loading...</p> }
+  @if (users.error()) { <p>Error: {{ users.error() }}</p> }
+  @for (user of users.value() ?? []; track user.id) {
+    <li>{{ user.name }}</li>
+  }
+` })
+export class UsersComponent {
+  users = httpResource<User[]>('/api/users');
+}
+```
+
+### `resource()` — signal-based async logic (Angular 19+, experimental)
+
+`resource()` handles any async operation (not just HTTP), with reactive dependencies:
+
+```typescript
+import { resource, signal } from '@angular/core';
+
+export class UserDetailComponent {
+  userId = signal(1);
+
+  user = resource({
+    request: () => this.userId(), // re-runs when userId changes
+    loader: async ({ request: id }) => {
+      const res = await fetch(`/api/users/${id}`);
+      return res.json() as Promise<User>;
+    }
+  });
+}
+```
+
+Both `resource()` and `httpResource()` expose `.value()`, `.isLoading()`, `.error()`, and `.status()` as signals.
+
+> These APIs are **experimental** in Angular 19-21. The `httpResource` API requires `provideHttpClient()` in your providers.
+
+---
 - Avoids repeating the same logic in multiple components
 - One shared instance keeps data in sync across the app
 - Easy to test — you can swap the real service with a fake one

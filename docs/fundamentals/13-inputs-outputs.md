@@ -1,5 +1,91 @@
 # Inputs and Outputs (Component Communication)
 
+## Are the new `input()` and `output()` signals?
+
+**Short answer:** `input()` is a signal. `output()` is NOT a signal — it is a different thing.
+
+### `input()` — yes, it IS a signal (read-only)
+
+`input()` returns a `Signal<T>` — specifically an `InputSignal<T>`, which is a **read-only signal**. You read it by calling it like a function. Angular tracks it like any other signal, so `computed()` and `effect()` can depend on it.
+
+```typescript
+name = input<string>('Guest'); // InputSignal<string>
+
+// Read it like any signal
+console.log(this.name());       // 'Guest'
+
+// Use in computed() — re-computes when parent changes the input
+greeting = computed(() => `Hello, ${this.name()}!`);
+
+// Use in effect() — re-runs when parent changes the input
+constructor() {
+  effect(() => console.log('Name changed to:', this.name()));
+}
+```
+
+**Why read-only?** The parent owns the value. The child must not overwrite it. If you need to both receive a value from the parent *and* change it yourself, that is `model()` (a writable signal).
+
+| | Type | Writable? | Use |
+|---|---|---|---|
+| `input()` | `InputSignal<T>` (read-only signal) | ❌ No | Receive data from parent |
+| `model()` | `ModelSignal<T>` (writable signal) | ✅ Yes | Two-way binding |
+| `signal()` | `WritableSignal<T>` | ✅ Yes | Internal component state |
+
+---
+
+### `output()` — NOT a signal
+
+`output()` returns an `OutputEmitterRef<T>` — this is **not a signal**. It is a simple event emitter. You cannot read it, subscribe to it with `toSignal()`, or use it in `computed()`. Its only job is to `.emit()` values up to the parent.
+
+```typescript
+saved = output<string>(); // OutputEmitterRef<string> — NOT a signal
+
+handleSave() {
+  this.saved.emit('saved!'); // only thing you can do with it
+}
+```
+
+Think of it as a stripped-down, modern replacement for `EventEmitter` — cleaner API, no RxJS dependency, but conceptually the same thing.
+
+```typescript
+// Old way — EventEmitter is actually an RxJS Subject underneath
+@Output() saved = new EventEmitter<string>(); // is an Observable
+
+// New way — OutputEmitterRef, not an Observable, not a signal
+saved = output<string>();
+```
+
+> If you need a parent to subscribe to an output as an Observable (rare), use `outputToObservable(this.saved)` from `@angular/core/rxjs-interop`.
+
+---
+
+### The complete picture
+
+```typescript
+import { Component, input, output, model, signal, computed } from '@angular/core';
+
+@Component({ selector: 'app-example', template: '' })
+export class ExampleComponent {
+  // From parent → child (read-only signal)
+  userId   = input.required<number>();         // InputSignal<number>
+  theme    = input<'light' | 'dark'>('light'); // InputSignal<'light'|'dark'>
+
+  // Two-way with parent (writable signal)
+  checked  = model(false);                     // ModelSignal<boolean>
+
+  // Internal state (writable signal, parent doesn't know about this)
+  count    = signal(0);                        // WritableSignal<number>
+
+  // Derived (read-only signal, auto-updates)
+  label    = computed(() => `User #${this.userId()}`); // Signal<string>
+
+  // To parent (NOT a signal — just an emitter)
+  saved    = output<string>();                 // OutputEmitterRef<string>
+}
+```
+
+---
+
 ## How to share data between parent and child
 
 The two main ways:
@@ -27,7 +113,7 @@ Parent ◀──[Output: event]── Child
 
 ## Inputs
 
-### Modern way — `input()` signal (Angular v17.1+)
+### Modern way — `input()` signal (stable since Angular 19)
 
 ```typescript
 import { Component, input } from '@angular/core';
@@ -140,7 +226,7 @@ Usage:
 
 ## Outputs
 
-### Modern way — `output()` function (Angular v17.3+)
+### Modern way — `output()` function (stable since Angular 19)
 
 ```typescript
 import { Component, output } from '@angular/core';

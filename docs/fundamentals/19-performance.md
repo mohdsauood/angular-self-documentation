@@ -91,7 +91,7 @@ export class UserListComponent {
 
 ---
 
-## 4. Signals (Angular 17+)
+## 4. Signals (Angular 17+, fully stable Angular 19+)
 
 ### What it is
 Signals are a reactive primitive where Angular knows exactly which parts of the template depend on which data. Only the affected DOM nodes are updated — not the whole component.
@@ -220,6 +220,50 @@ import { NgOptimizedImage } from '@angular/common';
 
 ---
 
+## 10. Zoneless change detection (Angular 20+ dev preview)
+
+### What it is
+Traditionally Angular relies on **Zone.js** to know when to run change detection — it patches all browser async APIs (setTimeout, fetch, event listeners, etc.) and notifies Angular on every callback.
+
+In Angular 20, **zoneless** change detection reached developer preview. Instead of Zone.js patching everything, Angular uses **signals** to know precisely what changed and only updates those parts.
+
+### Why it matters
+- No Zone.js overhead — smaller bundle, faster startup
+- Predictable change detection (only when a signal changes)
+- Required for some advanced performance scenarios (WebWorkers, micro-frontends)
+- The future default of Angular
+
+### How to opt in (Angular 20+)
+```typescript
+// app.config.ts
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideExperimentalZonelessChangeDetection()
+    // remove provideZoneChangeDetection() if present
+  ]
+};
+```
+
+### OnPush + Signals = optimal today
+Even before going fully zoneless, combining `ChangeDetectionStrategy.OnPush` with signals gives you most of the performance benefits right now:
+
+```typescript
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // ...  
+})
+export class ProductCardComponent {
+  product = input.required<Product>(); // signal input
+  discountLabel = computed(() => ...); // derived signal
+}
+```
+
+This is the **recommended default** for all components in Angular 21.
+
+---
+
 ## Summary
 
 | Technique | What it does | Main benefit |
@@ -232,6 +276,7 @@ import { NgOptimizedImage } from '@angular/common';
 | Avoid template functions | Reduce repeated computation | Less CPU per cycle |
 | Preloading | Background-load lazy routes | Instant navigation |
 | `NgOptimizedImage` | Lazy-load and size-optimize images | Faster page, no layout shift |
+| Zoneless | Remove Zone.js overhead | Smaller bundle, predictable CD |
 
 ## Quick memory line
 Performance = load less upfront (lazy loading) + update less (OnPush, signals) + track DOM efficiently (track).

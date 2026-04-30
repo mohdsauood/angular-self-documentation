@@ -54,7 +54,7 @@ username = signal('');
 <input [(ngModel)]="username()">
 ```
 
-**New best approach (Angular v17.2+ with model signals):**
+**New best approach (Angular 19+ — `model()` is fully stable):**
 ```typescript
 // Component
 import { model } from '@angular/core';
@@ -119,6 +119,35 @@ Control flow syntax controls what elements appear in the DOM.
 - Cleaner, more readable
 - Better TypeScript support
 - `track` is built-in (better performance)
+
+### Angular 21 template enhancements
+
+**Arrow functions in templates (Angular 21.2+)**
+
+You can now use arrow functions directly inside template expressions:
+
+```html
+<!-- Filter inline without a component method -->
+@for (user of users().filter(u => u.active); track user.id) {
+  <span>{{ user.name }}</span>
+}
+
+<!-- Inline transform -->
+{{ items().map(i => i.label).join(', ') }}
+```
+
+**`instanceof` in templates (Angular 21.2+)**
+
+```html
+@if (value instanceof MyClass) {
+  <!-- value is narrowed to MyClass here -->
+  <app-my-thing [item]="value" />
+}
+```
+
+**Exhaustive `@switch` type checking (Angular 21.2+)**
+
+The compiler now validates that `@switch` blocks cover all possible values when switching on a union type, catching unhandled cases at build time.
 
 ## Why it matters
 - Keeps UI dynamic and connected to component data

@@ -269,7 +269,7 @@ constructor() {
 
 ### Interview answer for "What is a signal in Angular?"
 
-> "A signal is a reactive primitive introduced in Angular 16. It's a value that Angular tracks — when it changes, only the parts of the template that read it re-render. There are three kinds: `signal()` for writable state, `computed()` for derived values, and `model()` for two-way parent-child binding. You use `effect()` to run side effects when signals change. Signals are replacing Zone.js-based change detection because they are more precise — Angular knows exactly what changed and only updates that."
+> "A signal is a reactive primitive introduced in Angular 16, stable in Angular 17, and the primary reactivity model in Angular 21. It's a value that Angular tracks — when it changes, only the parts of the template that read it re-render. There are three kinds: `signal()` for writable state, `computed()` for derived values, and `model()` for two-way parent-child binding. You use `effect()` to run side effects when signals change. Signals are replacing Zone.js-based change detection because they are more precise — Angular knows exactly what changed and only updates that. In Angular 21, `linkedSignal`, `toSignal`, `toObservable`, and `resource()` are all stable, and Signal Forms (`@angular/forms/signals`) are experimental."
 
 ---
 
