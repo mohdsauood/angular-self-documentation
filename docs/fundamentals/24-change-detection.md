@@ -163,14 +163,227 @@ export class MyComponent {
 }
 ```
 
-### `detectChanges()`
-Runs change detection on this component and its children immediately, right now — not at the next cycle.
+#### "Next cycle" does NOT mean a delay
+
+A common misconception: "next change detection cycle" sounds like it might be slow or happen after a long wait. It isn't.
+
+Change detection cycles are triggered by events — clicks, HTTP responses, timers, keyboard input. "Next cycle" = the one that runs when the next event fires, which in a live app is **milliseconds away**.
+
+If there are no events for an extended period, nothing on screen would change anyway — the user isn't interacting, so there's nothing to miss.
+
+#### Why `markForCheck()` is needed at all
+
+With `OnPush`, Angular only checks a component when it has reason to. If data changes inside a callback that Zone.js never saw — a third-party WebSocket library, a raw `addEventListener`, a non-Angular timer — Angular has no idea the data changed. Without `markForCheck()`, the screen stays **frozen forever**, not just until the next cycle.
 
 ```typescript
-this.cdr.detectChanges(); // synchronous, immediate check
+@Component({ changeDetection: ChangeDetectionStrategy.OnPush })
+export class PriceComponent {
+  price = 0;
+  private cdr = inject(ChangeDetectorRef);
+
+  ngOnInit() {
+    // Third-party WebSocket — runs OUTSIDE Angular's Zone
+    externalWebSocket.onMessage((data) => {
+      this.price = data.price;
+      // Without markForCheck(): screen is frozen, old price shown forever
+      this.cdr.markForCheck(); // ← Angular will check this component next cycle
+    });
+  }
+}
 ```
 
-Use `markForCheck()` most of the time. Use `detectChanges()` only when you need an immediate synchronous update (rare).
+#### When each trigger already handles it for you
+
+You only need `markForCheck()` manually when Angular's normal triggers aren't in play:
+
+| How data changes | `markForCheck()` needed? |
+|---|---|
+| Angular template event `(click)`, `(input)` etc. | ❌ — `OnPush` sees it automatically |
+| `async` pipe on an Observable | ❌ — `async` pipe calls it internally |
+| A Signal used in the template | ❌ — Angular tracks Signals automatically |
+| Third-party callback / raw `addEventListener` | ✅ — Zone.js didn't see it, you must call it |
+| Non-Angular WebSocket / external library | ✅ — same reason |
+
+### `detectChanges()`
+Runs change detection on this component and its children **immediately and synchronously** — right now, not at the next cycle. Unlike `markForCheck()` which schedules a check, `detectChanges()` forces one to happen on the spot.
+
+```typescript
+this.cdr.detectChanges(); // runs right now, synchronously
+```
+
+#### When to actually use `detectChanges()`
+
+**1. You need the DOM to be updated before you read it**
+
+You set some data, and immediately need to measure a DOM element (e.g., its height, scroll position). If you only called `markForCheck()`, the DOM wouldn't be updated yet — you'd read stale values.
+
+```typescript
+this.items = newItems;
+this.cdr.detectChanges(); // DOM is updated NOW
+const height = this.listEl.nativeElement.scrollHeight; // reading updated DOM ✅
+```
+
+**2. Inside `ngAfterViewInit` or `ngAfterContentInit` with `OnPush`**
+
+These lifecycle hooks run after the view is already checked. If you set data inside them, Angular is done checking for this cycle — the view won't update. `detectChanges()` forces an immediate re-check.
+
+```typescript
+ngAfterViewInit() {
+  this.title = 'Loaded'; // set after view init
+  this.cdr.detectChanges(); // without this, OnPush won't reflect the new title
+}
+```
+
+**3. During unit tests**
+
+In Angular tests, change detection doesn't run automatically. You call `detectChanges()` to trigger it manually and see the updated DOM.
+
+```typescript
+// In a test
+component.title = 'New Title';
+fixture.detectChanges(); // triggers change detection so the template reflects the change
+expect(fixture.nativeElement.querySelector('h1').textContent).toBe('New Title');
+```
+
+This is by far the most common place you'll see `detectChanges()` in real Angular codebases.
+
+**4. Rendering content inside a dynamically created component**
+
+When you create a component dynamically via `ViewContainerRef`, it may not be part of the normal check cycle yet. Calling `detectChanges()` on its `ChangeDetectorRef` ensures it renders immediately.
+
+#### `markForCheck()` vs `detectChanges()` — the key difference
+
+| | `markForCheck()` | `detectChanges()` |
+|---|---|---|
+| When it runs | Next change detection cycle | Immediately, right now |
+| Synchronous? | ❌ | ✅ |
+| Checks ancestors too? | ✅ (marks up the tree) | ❌ (only this component + children) |
+| Common use | External callbacks, WebSockets | DOM reads after update, `ngAfterViewInit`, tests |
+| Risk | None | Can cause `ExpressionChangedAfterChecked` error if misused |
+
+**Default choice: `markForCheck()`.** Only reach for `detectChanges()` when you specifically need the DOM updated before you do something else with it, or in tests.
+
+---
+
+## `ExpressionChangedAfterItHasBeenCheckedError`
+
+### What is it?
+
+This is one of the most common Angular errors you'll hit in development. You'll see it in the browser console as:
+
+```
+ERROR Error: ExpressionChangedAfterItHasBeenCheckedError:
+Expression has changed after it was checked.
+Previous value: 'false'. Current value: 'true'.
+```
+
+Angular only throws this **in development mode**. In production it's silently ignored — which is actually worse, because it means your UI is inconsistent with your data.
+
+### Why it happens
+
+Angular's change detection runs in two phases in development:
+1. **Check phase** — reads all template expressions and compares to previous values, updates the DOM
+2. **Verification phase** (dev only) — runs again immediately to confirm nothing changed during phase 1
+
+If something changed *during* or *after* phase 1 (meaning phase 2 sees a different value than phase 1 just set), Angular panics and throws this error. It's telling you: "After I finished checking, something changed the data I just checked. My rendered DOM is already wrong."
+
+### The most common triggers
+
+**1. Changing data in `ngAfterViewInit`**
+
+`ngAfterViewInit` runs *after* the check cycle is done. If you change a template-bound property here, Angular already rendered it as the old value.
+
+```typescript
+// BAD
+ngAfterViewInit() {
+  this.title = 'Loaded'; // change detection already ran, title was rendered as ''
+  // Angular's verification pass sees 'Loaded' ≠ '' → error
+}
+
+// GOOD — force an immediate re-check so both phases see the same value
+ngAfterViewInit() {
+  this.title = 'Loaded';
+  this.cdr.detectChanges(); // re-runs check right now, before the verification pass
+}
+```
+
+**2. A parent reading a child's state in the template**
+
+```typescript
+// child.component.ts
+export class ChildComponent {
+  isReady = false;
+
+  ngOnInit() {
+    this.isReady = true; // set during init — parent already rendered with isReady = false
+  }
+}
+```
+
+```html
+<!-- parent template — reads child's property AFTER child already changed it -->
+<app-child #child></app-child>
+<p>{{ child.isReady }}</p>  <!-- error: was false when checked, now true -->
+```
+
+Fix: move state to the parent, or use a Signal/Observable to communicate upward.
+
+**3. A method call in the template that has side effects**
+
+```html
+<!-- BAD — getTitle() changes a property as a side effect -->
+<h1>{{ getTitle() }}</h1>
+```
+
+```typescript
+getTitle() {
+  this.count++; // side effect — changes count every time Angular reads the template
+  return 'Hello';
+}
+```
+
+Template expressions should be **pure** — they should only return a value, never change state.
+
+### Why it only appears in dev mode
+
+In production Angular skips the verification phase for performance. The error disappears, but the bug is still there — your DOM renders with stale data. That's why you must fix these errors even though they "go away" in production.
+
+### How to fix it — decision tree
+
+```
+Got ExpressionChangedAfterChecked?
+  │
+  ├─ Did you change data in ngAfterViewInit / ngAfterContentInit?
+  │    └─ Add this.cdr.detectChanges() after the change
+  │
+  ├─ Is a parent reading data from a child's property?
+  │    └─ Lift the state up to the parent, or use an EventEmitter / Signal
+  │
+  ├─ Is a method in the template changing state as a side effect?
+  │    └─ Make the method pure — only return values, never mutate state
+  │
+  └─ Are you using async operations in a lifecycle hook?
+       └─ Use async pipe, or defer the change with Promise.resolve().then(...)
+```
+
+### The `Promise.resolve().then()` escape hatch
+
+For cases where you genuinely need to update something after Angular's check, you can defer the change to the next microtask — after both check and verification phases:
+
+```typescript
+ngAfterViewInit() {
+  Promise.resolve().then(() => {
+    this.title = 'Loaded'; // runs after the current check cycle is fully complete
+    // markForCheck is enough here since we're now in the next microtask
+    this.cdr.markForCheck();
+  });
+}
+```
+
+Use this sparingly — it's an escape hatch, not a solution. The real fix is restructuring your code so the change happens before check detection runs.
+
+### Quick memory line
+`ExpressionChangedAfterChecked` = Angular caught you changing data after it already rendered it. Fix it by using `detectChanges()` in `ngAfterViewInit`, lifting state up, or keeping template expressions side-effect free.
 
 ---
 
