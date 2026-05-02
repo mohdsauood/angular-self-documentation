@@ -132,6 +132,24 @@ This file helps you find topics quickly.
   - Signal naming conventions
   - Template conventions (class binding, style binding, control flow)
 
+### Shadow DOM & Encapsulation (23)
+- [23-shadow-dom.md](fundamentals/23-shadow-dom.md)
+  - What Shadow DOM is and why Angular uses it
+  - Three `ViewEncapsulation` modes: `Emulated`, `ShadowDom`, `None`
+  - The `:host` selector
+  - `::ng-deep` — what it does and why to avoid it
+  - Quick comparison table of all three modes
+
+### Change Detection (24)
+- [24-change-detection.md](fundamentals/24-change-detection.md)
+  - How default change detection works (Zone.js)
+  - `Default` vs `OnPush` strategy
+  - Why `OnPush` checks references, not values
+  - Signals and fine-grained change detection
+  - Zone.js — what it patches and why
+  - `markForCheck()` vs `detectChanges()`
+  - Zoneless change detection (Angular 20+ dev preview)
+
 ## Other Files
 - [00-your-definitions-corrected.md](fundamentals/00-your-definitions-corrected.md) - Your original definitions (corrected)
 - [DOCUMENTATION-TONE-GUIDE.md](DOCUMENTATION-TONE-GUIDE.md) - Writing style guide
