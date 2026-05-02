@@ -41,6 +41,9 @@ This file helps you find topics quickly.
   - CSS vs SCSS vs Sass
   - CSS encapsulation in Angular
   - What is `:host` in CSS?
+  - **Why `:host` exists — custom elements default to `display: inline`**
+  - **Mental model: inner elements vs the component wrapper tag**
+  - **`:host` use cases — display, sizing, theming, card styling**
 
 ### Architecture (10)
 - [10-modules-and-architecture.md](fundamentals/10-modules-and-architecture.md)
