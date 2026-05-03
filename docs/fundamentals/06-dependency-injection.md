@@ -1,5 +1,26 @@
 # Dependency Injection (DI)
 
+
+## Table of Contents
+
+- [What is Dependency Injection?](#what-is-dependency-injection)
+- [How it works](#how-it-works)
+  - [Without DI (manual way - bad)](#without-di-manual-way-bad)
+  - [With DI - Modern way (Angular v14+ - best)](#with-di-modern-way-angular-v14-best)
+  - [With DI - Old way (still works)](#with-di-old-way-still-works)
+- [Key parts of DI](#key-parts-of-di)
+  - [Service](#service)
+  - [Provider](#provider)
+  - [Injector](#injector)
+- [Why it matters](#why-it-matters)
+- [`inject()` function vs Constructor Injection — Old and New](#inject-function-vs-constructor-injection-old-and-new)
+  - [Background — why constructor injection existed](#background-why-constructor-injection-existed)
+  - [The new way — `inject()` function (Angular v14+)](#the-new-way-inject-function-angular-v14)
+  - [Why `inject()` is better](#why-inject-is-better)
+  - [When can you call `inject()`?](#when-can-you-call-inject)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is Dependency Injection?
 Dependency Injection is how Angular provides services to components (or other classes) automatically, instead of you creating them manually.
 

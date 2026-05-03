@@ -1,5 +1,30 @@
 # Routing
 
+
+## Table of Contents
+
+- [What is routing?](#what-is-routing)
+- [Core routing concepts](#core-routing-concepts)
+  - [Routes](#routes)
+  - [Child Routes](#child-routes)
+  - [Router Outlet](#router-outlet)
+  - [Navigation](#navigation)
+  - [Route Parameters](#route-parameters)
+  - [Route Guards](#route-guards)
+  - [Path Matching Strategies](#path-matching-strategies)
+  - [Lazy Loading](#lazy-loading)
+  - [Modern vs Old Setup](#modern-vs-old-setup)
+  - [`loadComponent` — Lazy Loading (Modern Way)](#loadcomponent-lazy-loading-modern-way)
+  - [Route Data — Making Data Available on Specific Routes](#route-data-making-data-available-on-specific-routes)
+  - [`resolve` — Pre-fetching Data Before Route Loads](#resolve-pre-fetching-data-before-route-loads)
+  - [Route Parameters with `input()` (Modern Way — `withComponentInputBinding`)](#route-parameters-with-input-modern-way-withcomponentinputbinding)
+  - [Route Parameters with Signals (toSignal)](#route-parameters-with-signals-tosignal)
+  - [View Transitions in Router](#view-transitions-in-router)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Route order matters!](#route-order-matters)
+- [Common mistakes](#common-mistakes)
+
 ## What is routing?
 Routing is how you navigate between different views/pages in your Angular app without reloading the entire browser page.
 

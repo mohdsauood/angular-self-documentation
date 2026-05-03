@@ -1,5 +1,48 @@
 # RxJS
 
+
+## Table of Contents
+
+- [What is RxJS?](#what-is-rxjs)
+- [Core concepts](#core-concepts)
+  - [Observable](#observable)
+  - [Subscribe](#subscribe)
+  - [Subject](#subject)
+  - [BehaviorSubject](#behaviorsubject)
+- [RxJS in Angular](#rxjs-in-angular)
+  - [HTTP request returns an Observable](#http-request-returns-an-observable)
+  - [Route params are Observables](#route-params-are-observables)
+  - [Form value changes are Observables](#form-value-changes-are-observables)
+- [Operators](#operators)
+- [Common operators](#common-operators)
+  - [`map` — transform each value](#map-transform-each-value)
+  - [`filter` — skip values that don't match](#filter-skip-values-that-dont-match)
+  - [`tap` — side effects without changing the value](#tap-side-effects-without-changing-the-value)
+  - [`catchError` — handle errors](#catcherror-handle-errors)
+  - [`debounceTime` — wait before emitting](#debouncetime-wait-before-emitting)
+  - [`distinctUntilChanged` — skip duplicate values](#distinctuntilchanged-skip-duplicate-values)
+  - [`takeUntil` — auto-unsubscribe when a signal fires](#takeuntil-auto-unsubscribe-when-a-signal-fires)
+  - [`forkJoin` — wait for multiple Observables to complete](#forkjoin-wait-for-multiple-observables-to-complete)
+- [`switchMap`, `mergeMap`, and `concatMap`](#switchmap-mergemap-and-concatmap)
+  - [The problem they solve](#the-problem-they-solve)
+  - [`switchMap` — cancel previous, keep only the latest](#switchmap-cancel-previous-keep-only-the-latest)
+  - [`mergeMap` (also called `flatMap`) — run all in parallel](#mergemap-also-called-flatmap-run-all-in-parallel)
+  - [`concatMap` — one at a time, in order](#concatmap-one-at-a-time-in-order)
+- [Quick comparison](#quick-comparison)
+- [Error handling — old way vs new way](#error-handling-old-way-vs-new-way)
+  - [Old way — next / error / complete callbacks](#old-way-next-error-complete-callbacks)
+  - [Modern way — `catchError` + `finalize` operators](#modern-way-catcherror-finalize-operators)
+  - [Why `catchError` is better than the error callback](#why-catcherror-is-better-than-the-error-callback)
+  - [Real-world pattern — loading state + error + finalize](#real-world-pattern-loading-state-error-finalize)
+- [`fromEvent` — DOM events as Observables](#fromevent-dom-events-as-observables)
+  - [Basic syntax](#basic-syntax)
+  - [In an Angular component — search input](#in-an-angular-component-search-input)
+  - [Common `fromEvent` use cases](#common-fromevent-use-cases)
+  - [Modern cleanup — `takeUntilDestroyed`](#modern-cleanup-takeuntildestroyed)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is RxJS?
 RxJS (Reactive Extensions for JavaScript) is a library for working with **asynchronous data streams** using **Observables**.
 

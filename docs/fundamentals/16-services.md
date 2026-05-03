@@ -1,5 +1,25 @@
 # Services
 
+
+## Table of Contents
+
+- [What is a service?](#what-is-a-service)
+- [Why use services?](#why-use-services)
+  - [The problem without services](#the-problem-without-services)
+  - [With a service](#with-a-service)
+- [How to create a service](#how-to-create-a-service)
+  - [Generate with Angular CLI](#generate-with-angular-cli)
+  - [What a service looks like](#what-a-service-looks-like)
+  - [The `@Injectable` decorator](#the-injectable-decorator)
+- [Using a service in a component](#using-a-service-in-a-component)
+- [What services are used for](#what-services-are-used-for)
+- [Services for sharing data between sibling components](#services-for-sharing-data-between-sibling-components)
+- [Modern async data fetching with `resource()` and `httpResource()` (Angular 19+)](#modern-async-data-fetching-with-resource-and-httpresource-angular-19)
+  - [`httpResource()` — signal-based HTTP (Angular 19.2+, experimental)](#httpresource-signal-based-http-angular-192-experimental)
+  - [`resource()` — signal-based async logic (Angular 19+, experimental)](#resource-signal-based-async-logic-angular-19-experimental)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is a service?
 A service is a TypeScript class that handles a specific job — like fetching data from an API, managing shared state, or handling authentication.
 

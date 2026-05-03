@@ -1,5 +1,38 @@
 # Components
 
+
+## Table of Contents
+
+- [What is a component?](#what-is-a-component)
+- [What a component contains](#what-a-component-contains)
+  - [Template (HTML)](#template-html)
+  - [Class (TypeScript)](#class-typescript)
+  - [Styles (CSS/SCSS)](#styles-cssscss)
+  - [Metadata (`@Component`)](#metadata-component)
+- [Why components matter](#why-components-matter)
+- [Quick memory line](#quick-memory-line)
+- [Dynamic Components with `ViewContainerRef`](#dynamic-components-with-viewcontainerref)
+  - [What is this?](#what-is-this)
+  - [Real-world use cases](#real-world-use-cases)
+  - [How it works — step by step](#how-it-works-step-by-step)
+  - [What `ComponentRef` gives you](#what-componentref-gives-you)
+  - [The toast notification service pattern](#the-toast-notification-service-pattern)
+  - [`ViewContainerRef` methods you'll use](#viewcontainerref-methods-youll-use)
+  - [`ViewContainerRef` vs just using `*ngIf`](#viewcontainerref-vs-just-using-ngif)
+  - [Quick memory line](#quick-memory-line-1)
+- [Content Projection — `ng-content`](#content-projection-ng-content)
+  - [What is content projection?](#what-is-content-projection)
+  - [Basic example — single slot](#basic-example-single-slot)
+  - [Multi-slot projection — `select`](#multi-slot-projection-select)
+  - [Default (catch-all) slot](#default-catch-all-slot)
+  - [`ngProjectAs` — project as a different selector](#ngprojectas-project-as-a-different-selector)
+  - [Accessing projected content in TypeScript — `@ContentChild` / `@ContentChildren`](#accessing-projected-content-in-typescript-contentchild-contentchildren)
+  - [Lifecycle hooks for projected content](#lifecycle-hooks-for-projected-content)
+  - [Content projection vs ViewContainerRef](#content-projection-vs-viewcontainerref)
+  - [Real-world patterns](#real-world-patterns)
+  - [Quick memory line](#quick-memory-line-2)
+- [Common mistakes](#common-mistakes)
+
 ## What is a component?
 A component is the basic building block of an Angular app. It controls one specific part of the screen (UI) and the logic for that part.
 

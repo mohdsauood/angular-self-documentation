@@ -1,5 +1,37 @@
 # Inputs and Outputs (Component Communication)
 
+
+## Table of Contents
+
+- [Are the new `input()` and `output()` signals?](#are-the-new-input-and-output-signals)
+  - [`input()` — yes, it IS a signal (read-only)](#input-yes-it-is-a-signal-read-only)
+  - [`output()` — NOT a signal](#output-not-a-signal)
+  - [The complete picture](#the-complete-picture)
+- [How to share data between parent and child](#how-to-share-data-between-parent-and-child)
+- [What are Inputs and Outputs?](#what-are-inputs-and-outputs)
+- [Inputs](#inputs)
+  - [Modern way — `input()` signal (stable since Angular 19)](#modern-way-input-signal-stable-since-angular-19)
+  - [Old way — `@Input()` decorator (still works)](#old-way-input-decorator-still-works)
+- [Required Inputs](#required-inputs)
+  - [Why required inputs exist](#why-required-inputs-exist)
+  - [Modern way — `input.required<T>()`](#modern-way-inputrequiredt)
+  - [Optional input with default value](#optional-input-with-default-value)
+  - [Old way — `@Input({ required: true })`](#old-way-input-required-true)
+- [Input Transforms](#input-transforms)
+- [Outputs](#outputs)
+  - [Modern way — `output()` function (stable since Angular 19)](#modern-way-output-function-stable-since-angular-19)
+  - [Old way — `@Output()` with `EventEmitter`](#old-way-output-with-eventemitter)
+- [Why `$event` in Angular?](#why-event-in-angular)
+  - [The honest answer](#the-honest-answer)
+  - [AngularJS history](#angularjs-history)
+  - [How `$event` works today](#how-event-works-today)
+  - [Why it makes sense as a developer](#why-it-makes-sense-as-a-developer)
+- [Input + Output together (two-way binding)](#input-output-together-two-way-binding)
+  - [The modern pattern](#the-modern-pattern)
+  - [Manual equivalent (old way)](#manual-equivalent-old-way)
+- [Quick memory lines](#quick-memory-lines)
+- [Common mistakes](#common-mistakes)
+
 ## Are the new `input()` and `output()` signals?
 
 **Short answer:** `input()` is a signal. `output()` is NOT a signal — it is a different thing.

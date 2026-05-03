@@ -1,5 +1,23 @@
 # Signals
 
+
+## Table of Contents
+
+- [What are signals?](#what-are-signals)
+- [Why signals were introduced](#why-signals-were-introduced)
+- [Three kinds of signals](#three-kinds-of-signals)
+- [`signal()` — writable signal](#signal-writable-signal)
+- [`computed()` — derived read-only signal](#computed-derived-read-only-signal)
+- [`model()` — two-way binding signal](#model-two-way-binding-signal)
+- [`effect()` — run side effects when signals change](#effect-run-side-effects-when-signals-change)
+- [`viewChild()` — signal-based ViewChild](#viewchild-signal-based-viewchild)
+- [Signal Forms (Angular 21+)](#signal-forms-angular-21)
+- [Real-world signal examples](#real-world-signal-examples)
+- [API calls with signals](#api-calls-with-signals)
+- [Summary](#summary)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What are signals?
 A **signal** is a reactive value that Angular tracks automatically. When a signal's value changes, any template or computation that reads it updates automatically — no manual change detection needed.
 

@@ -1,5 +1,33 @@
 # Angular Performance Optimization
 
+
+## Table of Contents
+
+- [What is performance optimization?](#what-is-performance-optimization)
+- [1. Lazy Loading](#1-lazy-loading)
+  - [What it is](#what-it-is)
+  - [Without lazy loading](#without-lazy-loading)
+  - [With lazy loading](#with-lazy-loading)
+- [2. OnPush Change Detection](#2-onpush-change-detection)
+  - [What it is](#what-it-is-1)
+- [3. `track` in `@for` loops (formerly `trackBy`)](#3-track-in-for-loops-formerly-trackby)
+  - [What it is](#what-it-is-2)
+- [4. Signals (Angular 17+, fully stable Angular 19+)](#4-signals-angular-17-fully-stable-angular-19)
+  - [What it is](#what-it-is-3)
+- [5. `async` pipe — auto-unsubscribe](#5-async-pipe-auto-unsubscribe)
+- [6. `toSignal()` — convert Observables to Signals](#6-tosignal-convert-observables-to-signals)
+- [7. Avoid expensive functions in templates](#7-avoid-expensive-functions-in-templates)
+- [8. Preloading strategies](#8-preloading-strategies)
+- [9. Image optimization with `NgOptimizedImage`](#9-image-optimization-with-ngoptimizedimage)
+- [10. Zoneless change detection (Angular 20+ dev preview)](#10-zoneless-change-detection-angular-20-dev-preview)
+  - [What it is](#what-it-is-4)
+  - [Why it matters](#why-it-matters)
+  - [How to opt in (Angular 20+)](#how-to-opt-in-angular-20)
+  - [OnPush + Signals = optimal today](#onpush-signals-optimal-today)
+- [Summary](#summary)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is performance optimization?
 Performance optimization is making your Angular app load faster, run smoother, and use fewer resources. A performant app responds quickly to user actions and doesn't waste computation on things that haven't changed.
 

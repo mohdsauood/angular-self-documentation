@@ -1,5 +1,28 @@
 # Quick Topic Index
 
+
+## Table of Contents
+
+- [Files in fundamentals/](#files-in-fundamentals)
+  - [Core Concepts (01-06)](#core-concepts-01-06)
+  - [Build & Configuration (07-08)](#build-configuration-07-08)
+  - [Styling (09)](#styling-09)
+  - [Architecture (10)](#architecture-10)
+  - [TypeScript (11)](#typescript-11)
+  - [Events & DOM (12)](#events-dom-12)
+  - [Inputs & Outputs (13) — new](#inputs-outputs-13-new)
+  - [Code Conventions (14) — new](#code-conventions-14-new)
+  - [Lifecycle Hooks (15)](#lifecycle-hooks-15)
+  - [Services (16)](#services-16)
+  - [HTTP Interceptors (17)](#http-interceptors-17)
+  - [RxJS (18)](#rxjs-18)
+  - [Performance Optimization (19)](#performance-optimization-19)
+  - [Shadow DOM & Encapsulation (23)](#shadow-dom-encapsulation-23)
+  - [Change Detection (24)](#change-detection-24)
+- [Other Files](#other-files)
+- [Roadmap](#roadmap)
+- [How to Use](#how-to-use)
+
 This file helps you find topics quickly.
 
 ## Files in fundamentals/

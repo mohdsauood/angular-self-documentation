@@ -1,5 +1,23 @@
 # Forms
 
+
+## Table of Contents
+
+- [What are forms?](#what-are-forms)
+  - [Your instinct — and the correction](#your-instinct-and-the-correction)
+- [Three approaches to Angular forms (as of Angular 21)](#three-approaches-to-angular-forms-as-of-angular-21)
+  - [1. Template-Driven Forms](#1-template-driven-forms)
+  - [2. Reactive Forms (Widely used)](#2-reactive-forms-widely-used)
+  - [3. Signal Forms — Angular 21 experimental](#3-signal-forms-angular-21-experimental)
+- [Important form concepts](#important-form-concepts)
+  - [Form Controls](#form-controls)
+  - [Form Groups](#form-groups)
+  - [Validation](#validation)
+  - [Error Display](#error-display)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What are forms?
 
 ### Your instinct — and the correction

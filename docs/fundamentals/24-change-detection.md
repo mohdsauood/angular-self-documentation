@@ -1,5 +1,33 @@
 # Change Detection in Angular
 
+
+## Table of Contents
+
+- [What is change detection?](#what-is-change-detection)
+- [How it works by default](#how-it-works-by-default)
+- [`Default` vs `OnPush` strategies](#default-vs-onpush-strategies)
+  - [Default strategy](#default-strategy)
+  - [`OnPush` strategy](#onpush-strategy)
+- [Important: `OnPush` cares about references, not values](#important-onpush-cares-about-references-not-values)
+- [Signals and change detection (Angular 17+)](#signals-and-change-detection-angular-17)
+- [Zone.js — the engine behind default change detection](#zonejs-the-engine-behind-default-change-detection)
+- [Manually triggering change detection](#manually-triggering-change-detection)
+  - [`markForCheck()`](#markforcheck)
+  - [`detectChanges()`](#detectchanges)
+- [`ExpressionChangedAfterItHasBeenCheckedError`](#expressionchangedafterithasbeencheckederror)
+  - [What is it?](#what-is-it)
+  - [Why it happens](#why-it-happens)
+  - [The most common triggers](#the-most-common-triggers)
+  - [Why it only appears in dev mode](#why-it-only-appears-in-dev-mode)
+  - [How to fix it — decision tree](#how-to-fix-it-decision-tree)
+  - [The `Promise.resolve().then()` escape hatch](#the-promiseresolvethen-escape-hatch)
+  - [Quick memory line](#quick-memory-line)
+- [Zoneless change detection (Angular 20+ dev preview)](#zoneless-change-detection-angular-20-dev-preview)
+- [Change detection flow — visual summary](#change-detection-flow-visual-summary)
+- [Summary table](#summary-table)
+- [Quick memory line](#quick-memory-line-1)
+- [Common mistakes](#common-mistakes)
+
 ## What is change detection?
 Change detection is how Angular knows when to update the DOM. When data in your component changes, Angular needs to re-render the template to show the latest values. Change detection is the process that checks for those changes and updates the screen.
 

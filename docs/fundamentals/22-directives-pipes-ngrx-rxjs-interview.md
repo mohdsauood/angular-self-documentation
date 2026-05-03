@@ -1,5 +1,15 @@
 # Directives, Pipes, Signals, NgRx, and RxJS Operators
 
+
+## Table of Contents
+
+- [Directives](#directives)
+- [Pipes](#pipes)
+- [Signals (interview summary)](#signals-interview-summary)
+- [NgRx](#ngrx)
+- [RxJS Operators — interview summary](#rxjs-operators-interview-summary)
+- [Quick reference — what to say in an interview](#quick-reference-what-to-say-in-an-interview)
+
 > This document is written for interview prep. Every section has a clear definition, a simple memorable example, and a use-case list. Read this the day before an Angular interview.
 
 ---

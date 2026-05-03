@@ -1,5 +1,20 @@
 # Build and Development Tools
 
+
+## Table of Contents
+
+- [What is Vite?](#what-is-vite)
+  - [What is it?](#what-is-it)
+  - [What it does](#what-it-does)
+  - [Why Angular switched to Vite](#why-angular-switched-to-vite)
+  - [Quick memory line](#quick-memory-line)
+- [What Was Before Vite?](#what-was-before-vite)
+  - [Webpack (used before Angular v17/v18)](#webpack-used-before-angular-v17v18)
+  - [Problems with Webpack](#problems-with-webpack)
+  - [The evolution](#the-evolution)
+  - [Quick memory line](#quick-memory-line-1)
+- [Common mistakes](#common-mistakes)
+
 ## What is Vite?
 
 ### What is it?

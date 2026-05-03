@@ -1,5 +1,33 @@
 # Deferrable Views (`@defer`)
 
+
+## Table of Contents
+
+- [What is `@defer`?](#what-is-defer)
+- [Why it matters](#why-it-matters)
+- [How the chunks work — the important question](#how-the-chunks-work-the-important-question)
+- [Basic syntax](#basic-syntax)
+- [Triggers](#triggers)
+  - [`on idle` (default)](#on-idle-default)
+  - [`on viewport`](#on-viewport)
+  - [`on interaction`](#on-interaction)
+  - [`on hover`](#on-hover)
+  - [`on timer`](#on-timer)
+  - [`when` — custom condition](#when-custom-condition)
+- [Prefetching](#prefetching)
+  - [Prefetch triggers](#prefetch-triggers)
+  - [When to use prefetch](#when-to-use-prefetch)
+- [Minimum loading time](#minimum-loading-time)
+- [After how long to show placeholder](#after-how-long-to-show-placeholder)
+- [Real-world examples](#real-world-examples)
+  - [Comments section (lazy load on scroll)](#comments-section-lazy-load-on-scroll)
+  - [Rich text editor (load on interaction)](#rich-text-editor-load-on-interaction)
+  - [Admin panel (load when user is admin)](#admin-panel-load-when-user-is-admin)
+  - [Dashboard widgets (staggered loading)](#dashboard-widgets-staggered-loading)
+- [Why this matters for performance](#why-this-matters-for-performance)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is `@defer`?
 
 `@defer` is an Angular template block (stable since Angular 17, with enhancements in Angular 21) that lets you **lazily load a part of your template** — including the component's code — only when a certain condition is met, instead of loading everything upfront.

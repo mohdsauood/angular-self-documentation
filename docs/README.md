@@ -1,5 +1,13 @@
 # Angular Self Documentation (Angular 21)
 
+
+## Table of Contents
+
+- [Important Files](#important-files)
+- [Structure](#structure)
+- [How to use](#how-to-use)
+- [When Adding New Topics](#when-adding-new-topics)
+
 This folder is your personal Angular knowledge base. All documentation targets **Angular 21** (current stable: 21.x, 2025-2026).
 
 Goal:

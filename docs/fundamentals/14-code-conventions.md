@@ -1,5 +1,26 @@
 # Angular Code Conventions
 
+
+## Table of Contents
+
+- [Output (Event Emitter) Naming](#output-event-emitter-naming)
+  - [The debate](#the-debate)
+  - [Your take (and why it is understandable)](#your-take-and-why-it-is-understandable)
+  - [The Angular community / style guide take](#the-angular-community-style-guide-take)
+  - [The verdict (opinionated)](#the-verdict-opinionated)
+- [Input Naming](#input-naming)
+  - [Rules](#rules)
+- [Component Selector Naming](#component-selector-naming)
+  - [Rule](#rule)
+- [File and Class Naming](#file-and-class-naming)
+- [Method Naming](#method-naming)
+- [Signal Naming](#signal-naming)
+- [Template Conventions](#template-conventions)
+  - [Class bindings — not `ngClass`](#class-bindings-not-ngclass)
+  - [Style bindings — not `ngStyle`](#style-bindings-not-ngstyle)
+  - [Control flow — not structural directives](#control-flow-not-structural-directives)
+- [Quick memory lines](#quick-memory-lines)
+
 A personal reference for naming, structure, and style decisions in Angular projects.
 
 ---

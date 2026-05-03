@@ -1,5 +1,15 @@
 # Your Definitions (Corrected + Simplified)
 
+
+## Table of Contents
+
+- [1) What is Angular?](#1-what-is-angular)
+- [2) Components](#2-components)
+- [3) Routing](#3-routing)
+- [4) Forms](#4-forms)
+- [5) Dependency Injection](#5-dependency-injection)
+- [Memory shortcut](#memory-shortcut)
+
 ## 1) What is Angular?
 Your version:
 > Angular is a javascript framework used to build frontend web applications which are scalable and provides easy development experience to the community

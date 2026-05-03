@@ -1,5 +1,35 @@
 # Modules and Architecture
 
+
+## Table of Contents
+
+- [Understanding Angular Modules (NgModules)](#understanding-angular-modules-ngmodules)
+  - [What is NgModule?](#what-is-ngmodule)
+  - [Old way (with NgModule)](#old-way-with-ngmodule)
+  - [The problem with NgModules](#the-problem-with-ngmodules)
+  - [Quick memory line](#quick-memory-line)
+- [Standalone Components (The Modern Way)](#standalone-components-the-modern-way)
+  - [What is standalone: true?](#what-is-standalone-true)
+  - [Modern way (standalone)](#modern-way-standalone)
+  - [Why standalone is better](#why-standalone-is-better)
+  - [Migration path](#migration-path)
+  - [Quick memory line](#quick-memory-line-1)
+- [Why do we sometimes import `CommonModule` and `RouterModule` in standalone components?](#why-do-we-sometimes-import-commonmodule-and-routermodule-in-standalone-components)
+  - [The confusion](#the-confusion)
+  - [`CommonModule` — do you still need it?](#commonmodule-do-you-still-need-it)
+  - [`RouterModule` — do you still need it?](#routermodule-do-you-still-need-it)
+  - [When would you still see `CommonModule` / `RouterModule`?](#when-would-you-still-see-commonmodule-routermodule)
+  - [Summary table](#summary-table)
+  - [Quick memory line](#quick-memory-line-2)
+- [Types of Modules (Confusing Terms!)](#types-of-modules-confusing-terms)
+  - [1. NgModule (Angular Module)](#1-ngmodule-angular-module)
+  - [2. ECMAScript Module (ES Module)](#2-ecmascript-module-es-module)
+  - [3. CommonModule (Angular built-in module)](#3-commonmodule-angular-built-in-module)
+  - [When do you need CommonModule?](#when-do-you-need-commonmodule)
+  - [Summary table](#summary-table-1)
+  - [Quick memory line](#quick-memory-line-3)
+- [Common mistakes](#common-mistakes)
+
 ## Understanding Angular Modules (NgModules)
 
 ### What is NgModule?

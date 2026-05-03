@@ -1,5 +1,15 @@
 # Angular Roadmap: Beginner to 6-Year Developer
 
+
+## Table of Contents
+
+- [Stage 1 — Beginner (0 to 6 months)](#stage-1-beginner-0-to-6-months)
+- [Stage 2 — Junior (6 to 18 months)](#stage-2-junior-6-to-18-months)
+- [Stage 3 — Mid-Level (1.5 to 3 years)](#stage-3-mid-level-15-to-3-years)
+- [Stage 4 — Senior Track (3 to 6 years)](#stage-4-senior-track-3-to-6-years)
+- [Cross-cutting topics (always improve)](#cross-cutting-topics-always-improve)
+- [Feynman template for every topic](#feynman-template-for-every-topic)
+
 Use this as a checklist. Write each topic in your own words.
 
 ## Stage 1 — Beginner (0 to 6 months)

@@ -1,5 +1,45 @@
 # Project Configuration
 
+
+## Table of Contents
+
+- [What is the .angular Folder?](#what-is-the-angular-folder)
+  - [What is it?](#what-is-it)
+  - [What it does](#what-it-does)
+  - [Important notes](#important-notes)
+  - [Quick memory line](#quick-memory-line)
+- [What is angular.json?](#what-is-angularjson)
+  - [What is it?](#what-is-it-1)
+  - [What it does](#what-it-does-1)
+  - [Key sections](#key-sections)
+  - [What you configure here](#what-you-configure-here)
+  - [Quick memory line](#quick-memory-line-1)
+- [What is tsconfig.json?](#what-is-tsconfigjson)
+  - [What is it?](#what-is-it-2)
+  - [What it does](#what-it-does-2)
+  - [Important settings](#important-settings)
+  - [Angular specific](#angular-specific)
+  - [Quick memory line](#quick-memory-line-2)
+- [What is Monorepo?](#what-is-monorepo)
+  - [What is it?](#what-is-it-3)
+  - [Structure example](#structure-example)
+  - [Why use monorepo](#why-use-monorepo)
+  - [Tools for Angular monorepo](#tools-for-angular-monorepo)
+  - [Quick memory line](#quick-memory-line-3)
+- [What is `app.config.ts`?](#what-is-appconfigts)
+  - [Is it a new file? (Yes — standalone era)](#is-it-a-new-file-yes-standalone-era)
+  - [What does it look like?](#what-does-it-look-like)
+  - [What are `providers`?](#what-are-providers)
+  - [What are `provideRouter` feature flags?](#what-are-providerouter-feature-flags)
+  - [Should `provideRouter` always be in `app.config.ts`?](#should-providerouter-always-be-in-appconfigts)
+  - [Quick memory line](#quick-memory-line-4)
+- [What is App Config (Providers)?](#what-is-app-config-providers)
+  - [What is it?](#what-is-it-4)
+  - [In modern Angular (standalone)](#in-modern-angular-standalone)
+  - [What providers do](#what-providers-do)
+  - [Quick memory line](#quick-memory-line-5)
+- [Common mistakes](#common-mistakes)
+
 ## What is the .angular Folder?
 
 ### What is it?

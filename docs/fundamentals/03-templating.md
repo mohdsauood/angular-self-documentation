@@ -1,5 +1,21 @@
 # Templating
 
+
+## Table of Contents
+
+- [What is templating?](#what-is-templating)
+- [Core template features](#core-template-features)
+  - [Interpolation `{{ }}`](#interpolation)
+  - [Property Binding `[ ]`](#property-binding)
+  - [Event Binding `( )`](#event-binding)
+  - [Two-Way Binding `[( )]`](#two-way-binding)
+  - [Control Flow (Modern Syntax)](#control-flow-modern-syntax)
+  - [Quick comparison: Old vs New](#quick-comparison-old-vs-new)
+  - [Angular 21 template enhancements](#angular-21-template-enhancements)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is templating?
 Templating is how Angular displays data and connects UI events using HTML + Angular syntax.
 

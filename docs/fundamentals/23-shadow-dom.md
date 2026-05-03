@@ -1,5 +1,21 @@
 # Shadow DOM in Angular
 
+
+## Table of Contents
+
+- [What is Shadow DOM?](#what-is-shadow-dom)
+- [Why does Angular use it?](#why-does-angular-use-it)
+- [The three View Encapsulation modes](#the-three-view-encapsulation-modes)
+  - [1. `Emulated` (default)](#1-emulated-default)
+  - [2. `ShadowDom`](#2-shadowdom)
+  - [3. `None`](#3-none)
+- [The `:host` selector](#the-host-selector)
+- [The `::ng-deep` selector (use with caution)](#the-ng-deep-selector-use-with-caution)
+- [Quick comparison table](#quick-comparison-table)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is Shadow DOM?
 Shadow DOM is a browser feature that lets an element have its own hidden, isolated piece of the DOM tree. CSS and HTML inside a Shadow DOM don't leak out to the rest of the page, and styles from outside don't leak in.
 

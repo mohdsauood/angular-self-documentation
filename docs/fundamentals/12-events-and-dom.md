@@ -1,5 +1,45 @@
 # Events and DOM
 
+
+## Table of Contents
+
+- [How trackBy Works in *ngFor](#how-trackby-works-in-ngfor)
+  - [The performance problem](#the-performance-problem)
+  - [With trackBy](#with-trackby)
+  - [How it works under the hood](#how-it-works-under-the-hood)
+  - [When to use trackBy](#when-to-use-trackby)
+  - [Quick memory line](#quick-memory-line)
+- [Event Emitter in Vanilla JavaScript](#event-emitter-in-vanilla-javascript)
+  - [What is EventEmitter?](#what-is-eventemitter)
+  - [In vanilla JavaScript (custom implementation)](#in-vanilla-javascript-custom-implementation)
+  - [Usage](#usage)
+  - [In Angular (built-in EventEmitter)](#in-angular-built-in-eventemitter)
+  - [How it works under the hood](#how-it-works-under-the-hood-1)
+  - [Quick memory line](#quick-memory-line-1)
+- [All Types of HTML Events](#all-types-of-html-events)
+  - [Mouse Events](#mouse-events)
+  - [Keyboard Events](#keyboard-events)
+  - [Form Events](#form-events)
+  - [Touch Events (Mobile)](#touch-events-mobile)
+  - [Window Events](#window-events)
+  - [Drag Events](#drag-events)
+  - [Media Events](#media-events)
+  - [Clipboard Events](#clipboard-events)
+  - [Angular event binding examples](#angular-event-binding-examples)
+  - [Event object](#event-object)
+  - [Quick memory line](#quick-memory-line-2)
+- [ElementRef and Renderer2 — When @HostBinding Is Not Enough](#elementref-and-renderer2-when-hostbinding-is-not-enough)
+  - [Start here: @HostBinding / @HostListener are the right default](#start-here-hostbinding-hostlistener-are-the-right-default)
+  - [The 5 cases where @HostBinding can't help you](#the-5-cases-where-hostbinding-cant-help-you)
+  - [Summary: what each tool is for](#summary-what-each-tool-is-for)
+  - [What ElementRef actually is](#what-elementref-actually-is)
+  - [What Renderer2 actually is](#what-renderer2-actually-is)
+  - [Why directly using nativeElement is dangerous — the full picture](#why-directly-using-nativeelement-is-dangerous-the-full-picture)
+  - [How to inject both](#how-to-inject-both)
+  - [Common Renderer2 methods](#common-renderer2-methods)
+  - [Quick memory line](#quick-memory-line-3)
+- [Common mistakes](#common-mistakes)
+
 ## How trackBy Works in *ngFor
 
 ### The performance problem

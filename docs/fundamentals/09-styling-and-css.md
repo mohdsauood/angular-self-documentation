@@ -1,5 +1,35 @@
 # Styling and CSS Concepts
 
+
+## Table of Contents
+
+- [CSS vs SCSS vs Sass (Preprocessors)](#css-vs-scss-vs-sass-preprocessors)
+  - [What is a CSS Preprocessor?](#what-is-a-css-preprocessor)
+  - [Regular CSS](#regular-css)
+  - [SCSS (Sassy CSS)](#scss-sassy-css)
+  - [Sass (indented syntax)](#sass-indented-syntax)
+  - [Key differences](#key-differences)
+  - [Which to use?](#which-to-use)
+  - [Quick memory line](#quick-memory-line)
+- [CSS Encapsulation in Angular](#css-encapsulation-in-angular)
+  - [What is CSS encapsulation?](#what-is-css-encapsulation)
+  - [The problem without encapsulation](#the-problem-without-encapsulation)
+  - [How Angular solves it](#how-angular-solves-it)
+  - [Encapsulation modes](#encapsulation-modes)
+  - [How to affect global styles from component](#how-to-affect-global-styles-from-component)
+  - [Quick memory line](#quick-memory-line-1)
+- [What is :host in CSS?](#what-is-host-in-css)
+  - [What is it?](#what-is-it)
+  - [The host element](#the-host-element)
+  - [The mental model](#the-mental-model)
+  - [Why does :host even come into play?](#why-does-host-even-come-into-play)
+  - [Common :host use cases](#common-host-use-cases)
+  - [Without :host](#without-host)
+  - [With :host](#with-host)
+  - [:host variants](#host-variants)
+  - [Quick memory line](#quick-memory-line-2)
+- [Common mistakes](#common-mistakes)
+
 ## CSS vs SCSS vs Sass (Preprocessors)
 
 ### What is a CSS Preprocessor?

@@ -1,5 +1,29 @@
 # TypeScript Basics
 
+
+## Table of Contents
+
+- [Primitive Types in TypeScript and Programming](#primitive-types-in-typescript-and-programming)
+  - [What are primitive types?](#what-are-primitive-types)
+  - [TypeScript/JavaScript Primitives](#typescriptjavascript-primitives)
+  - [Summary table](#summary-table)
+  - [Non-primitive types (Reference types)](#non-primitive-types-reference-types)
+  - [Key difference: Primitives vs Objects](#key-difference-primitives-vs-objects)
+  - [Quick memory line](#quick-memory-line)
+- [TypeScript Specific Features](#typescript-specific-features)
+  - [Type annotations](#type-annotations)
+  - [Type inference](#type-inference)
+  - [Union types](#union-types)
+  - [Type aliases](#type-aliases)
+  - [Literal types](#literal-types)
+- [`Record<K, V>` — typed object with known key and value shapes](#recordk-v-typed-object-with-known-key-and-value-shapes)
+  - [Why `Record` instead of `object`?](#why-record-instead-of-object)
+  - [When to use `Record` vs other types](#when-to-use-record-vs-other-types)
+  - [Real-world examples](#real-world-examples)
+  - [`Record` with union key — exhaustive object](#record-with-union-key-exhaustive-object)
+  - [`object` vs `{}` vs `Record` vs interface](#object-vs-vs-record-vs-interface)
+- [Common mistakes](#common-mistakes)
+
 ## Primitive Types in TypeScript and Programming
 
 ### What are primitive types?

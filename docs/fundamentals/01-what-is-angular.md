@@ -1,5 +1,15 @@
 # What is Angular?
 
+
+## Table of Contents
+
+- [What is Angular?](#what-is-angular)
+- [What Angular does](#what-angular-does)
+- [Key point](#key-point)
+- [What version does this documentation cover?](#what-version-does-this-documentation-cover)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is Angular?
 Angular is a TypeScript-based framework used to build frontend web applications.
 

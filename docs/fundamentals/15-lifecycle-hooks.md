@@ -1,5 +1,23 @@
 # Component Lifecycle Hooks
 
+
+## Table of Contents
+
+- [What are lifecycle hooks?](#what-are-lifecycle-hooks)
+- [The lifecycle stages (in order)](#the-lifecycle-stages-in-order)
+- [The hooks you will actually use](#the-hooks-you-will-actually-use)
+  - [`ngOnInit` — most common](#ngoninit-most-common)
+  - [`ngOnChanges` — when inputs change](#ngonchanges-when-inputs-change)
+  - [`ngOnDestroy` — cleanup](#ngondestroy-cleanup)
+  - [`ngAfterViewInit` — after view is ready](#ngafterviewinit-after-view-is-ready)
+- [Constructor vs `ngOnInit` — what is the difference?](#constructor-vs-ngoninit-what-is-the-difference)
+- [`effect()` — the signal alternative to `ngOnChanges`](#effect-the-signal-alternative-to-ngonchanges)
+- [`afterEveryRender` and `afterNextRender` — modern DOM hooks (Angular 20+)](#aftereveryrender-and-afternextrender-modern-dom-hooks-angular-20)
+- [`DestroyRef` — modern cleanup (Angular 16+)](#destroyref-modern-cleanup-angular-16)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What are lifecycle hooks?
 Every Angular component goes through a series of stages from creation to destruction. Lifecycle hooks are methods you add to your component to run code at a specific stage of that journey.
 

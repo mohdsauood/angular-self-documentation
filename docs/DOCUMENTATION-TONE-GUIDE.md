@@ -1,5 +1,53 @@
 # Documentation Tone & Style Guide
 
+
+## Table of Contents
+
+- [Writing Style](#writing-style)
+  - [Use Direct, Simple Language](#use-direct-simple-language)
+  - [Use Action-Oriented Explanations](#use-action-oriented-explanations)
+  - [Explain "What It Does" Not Just "What It Is"](#explain-what-it-does-not-just-what-it-is)
+  - [Keep Sentences Short and Clear](#keep-sentences-short-and-clear)
+- [Structure Template](#structure-template)
+  - [1. What is [Topic]?](#1-what-is-topic)
+- [What is routing?](#what-is-routing)
+  - [2. Core Concepts (if applicable)](#2-core-concepts-if-applicable)
+  - [Interpolation `{{ }}`](#interpolation)
+  - [3. Why It Matters](#3-why-it-matters)
+- [Why it matters](#why-it-matters)
+  - [4. Quick Memory Line](#4-quick-memory-line)
+- [Quick memory line](#quick-memory-line)
+  - [5. Common Mistakes](#5-common-mistakes)
+- [Common mistakes](#common-mistakes)
+- [Tone Principles](#tone-principles)
+  - [Be Conversational](#be-conversational)
+  - [Assume Zero Prior Knowledge](#assume-zero-prior-knowledge)
+  - [Use Examples](#use-examples)
+  - [Be Specific, Not Abstract](#be-specific-not-abstract)
+  - [Use Analogies When Helpful](#use-analogies-when-helpful)
+- [Formatting Rules](#formatting-rules)
+  - [Code Examples](#code-examples)
+  - [Lists](#lists)
+  - [Headings](#headings)
+  - [Emphasis](#emphasis)
+- [Example Content Comparison](#example-content-comparison)
+  - [Before (Too Formal)](#before-too-formal)
+- [Definition](#definition)
+  - [After (Simple & Direct)](#after-simple-direct)
+- [What is Dependency Injection?](#what-is-dependency-injection)
+- [Real Examples from This Workspace](#real-examples-from-this-workspace)
+  - [Example 1: Interpolation](#example-1-interpolation)
+  - [Interpolation `{{ }}`](#interpolation-1)
+  - [Example 2: Property Binding](#example-2-property-binding)
+  - [Property Binding `[ ]`](#property-binding)
+  - [Example 3: Event Binding](#example-3-event-binding)
+  - [Event Binding `( )`](#event-binding)
+- [Key Phrases to Use](#key-phrases-to-use)
+  - [Good Phrases](#good-phrases)
+  - [Avoid These Phrases](#avoid-these-phrases)
+- [Writing Process](#writing-process)
+- [Testing Your Writing](#testing-your-writing)
+
 This file defines how all Angular documentation in this workspace should be written. Use this as a reference before creating or updating any documentation.
 
 ## Writing Style

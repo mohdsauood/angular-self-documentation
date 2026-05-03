@@ -1,5 +1,21 @@
 # HTTP Interceptors
 
+
+## Table of Contents
+
+- [What is an interceptor?](#what-is-an-interceptor)
+- [Common uses for interceptors](#common-uses-for-interceptors)
+- [Modern interceptors (Angular v15+ — functional style)](#modern-interceptors-angular-v15-functional-style)
+  - [Creating an interceptor](#creating-an-interceptor)
+  - [Registering the interceptor in `app.config.ts`](#registering-the-interceptor-in-appconfigts)
+- [Old class-based interceptors (still works)](#old-class-based-interceptors-still-works)
+- [Why requests are immutable — why you use `.clone()`](#why-requests-are-immutable-why-you-use-clone)
+- [Error handling interceptor](#error-handling-interceptor)
+- [Multiple interceptors](#multiple-interceptors)
+- [Why it matters](#why-it-matters)
+- [Quick memory line](#quick-memory-line)
+- [Common mistakes](#common-mistakes)
+
 ## What is an interceptor?
 An interceptor is a piece of code that sits between your app and the server. Every HTTP request your app sends (or response it receives) passes through the interceptor first.
 
