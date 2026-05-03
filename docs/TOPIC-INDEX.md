@@ -137,10 +137,18 @@ This file helps you find topics quickly.
 
 ### Shadow DOM & Encapsulation (23)
 - [23-shadow-dom.md](fundamentals/23-shadow-dom.md)
-  - What Shadow DOM is and why Angular uses it
+  - Shadow DOM anatomy: shadow host, shadow root, shadow tree, light DOM
+  - How the browser builds a Shadow DOM step by step
+  - Open vs closed shadow root modes
+  - Light DOM vs Shadow DOM side-by-side
+  - Slots — native `<slot>` vs Angular `ng-content`, named slots
+  - Event retargeting — why `event.target` changes at the boundary
   - Three `ViewEncapsulation` modes: `Emulated`, `ShadowDom`, `None`
-  - The `:host` selector
-  - `::ng-deep` — what it does and why to avoid it
+  - The `:host` and `:host-context()` selectors — why they exist
+  - Styling across the shadow boundary with CSS custom properties
+  - `::ng-deep` — what it does, why to avoid it, better alternatives
+  - How to inspect Shadow DOM in Chrome DevTools
+  - When to actually use `ViewEncapsulation.ShadowDom` in Angular
   - Quick comparison table of all three modes
 
 ### Change Detection (24)
