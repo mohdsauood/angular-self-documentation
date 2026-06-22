@@ -114,7 +114,7 @@ This file helps you find topics quickly.
 - [18-rxjs.md](fundamentals/18-rxjs.md)
   - What RxJS is and why Angular uses it
   - Observable, subscribe, Subject, BehaviorSubject
-  - Common operators: `map`, `filter`, `tap`, `catchError`, `debounceTime`, `distinctUntilChanged`, `takeUntil`, `forkJoin`
+  - Common operators: `map`, `filter`, `tap`, `catchError`, `debounceTime`, `distinctUntilChanged`, `takeUntil`, `forkJoin`, `shareReplay`
   - **`switchMap` — cancel previous, keep latest (search)**
   - **`mergeMap` — all in parallel (independent requests)**
   - **`concatMap` — one at a time, in order (sequential)**
@@ -160,6 +160,15 @@ This file helps you find topics quickly.
   - Zone.js — what it patches and why
   - `markForCheck()` vs `detectChanges()`
   - Zoneless change detection (Angular 20+ dev preview)
+
+### ARIA & Accessibility (25) — new
+- [25-aria-accessibility.md](fundamentals/25-aria-accessibility.md)
+  - What is ARIA and why it exists
+  - Direct `[attr.aria-*]` binding in Angular templates
+  - `@angular/cdk/a11y` package — `LiveAnnouncer`, `FocusMonitor`, `InteractivityChecker`, `cdkTrapFocus`
+  - How Angular Forms handle accessibility automatically
+  - Angular Material's built-in accessibility
+  - Common ARIA mistakes and how to fix them
 
 ## Other Files
 - [00-your-definitions-corrected.md](fundamentals/00-your-definitions-corrected.md) - Your original definitions (corrected)

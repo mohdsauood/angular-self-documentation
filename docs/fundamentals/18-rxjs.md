@@ -247,6 +247,164 @@ forkJoin([
 
 ---
 
+### `shareReplay` — multicast + cache the last N values
+
+`shareReplay` solves a very common Angular problem: **multiple subscribers triggering the same HTTP request multiple times.**
+
+Without `shareReplay`, every `.subscribe()` triggers a new HTTP call:
+
+```typescript
+const users$ = this.http.get<User[]>('/api/users');
+
+// ❌ Triggers 3 separate HTTP requests!
+users$.subscribe(users => console.log('Sub 1:', users));
+users$.subscribe(users => console.log('Sub 2:', users));
+users$.subscribe(users => console.log('Sub 3:', users));
+```
+
+With `shareReplay(1)`, only **one** HTTP request is made, and the result is **replayed** to all current and future subscribers:
+
+```typescript
+import { shareReplay } from 'rxjs/operators';
+
+const users$ = this.http.get<User[]>('/api/users').pipe(
+  shareReplay(1) // bufferSize = 1 (cache the last 1 value)
+);
+
+// ✅ Only 1 HTTP request! All 3 subscribers get the same result.
+users$.subscribe(users => console.log('Sub 1:', users));
+users$.subscribe(users => console.log('Sub 2:', users));
+users$.subscribe(users => console.log('Sub 3:', users));
+
+// ✅ Future subscribers also get the cached value (no new request)
+setTimeout(() => {
+  users$.subscribe(users => console.log('Late sub:', users));
+}, 5000);
+```
+
+#### How it works
+
+`shareReplay` does two things:
+
+1. **Multicasts** — shares a single underlying subscription among all subscribers (like `share()`)
+2. **Replays** — stores the last N emitted values and sends them immediately to new subscribers
+
+The parameter `shareReplay(bufferSize)` controls how many values to cache:
+
+```typescript
+shareReplay(1)  // cache the last 1 value (most common for HTTP)
+shareReplay(3)  // cache the last 3 values
+shareReplay()   // cache ALL values (infinite buffer — use with caution)
+```
+
+#### Common use case: Caching a service's HTTP call
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private users$: Observable<User[]> | null = null;
+
+  getUsers(): Observable<User[]> {
+    if (!this.users$) {
+      this.users$ = this.http.get<User[]>('/api/users').pipe(
+        shareReplay(1) // cache the result forever (or until page refresh)
+      );
+    }
+    return this.users$;
+  }
+}
+```
+
+Now every component that calls `getUsers()` shares the same cached HTTP result — no duplicate requests.
+
+#### `shareReplay` vs `share`
+
+| | `share()` | `shareReplay(1)` |
+|---|---|---|
+| Multicasts? | ✅ Yes | ✅ Yes |
+| Caches for late subscribers? | ❌ No | ✅ Yes |
+| Ref-counts? | ✅ Unsubscribes when all unsubscribe | ⚠️ Keeps subscription alive (by default) |
+| Use case | Hot observable sharing | HTTP caching, avoiding duplicate requests |
+
+#### Memory leak warning ⚠️ — how `refCount` works
+
+**The problem:** `shareReplay(1)` (without `refCount: true`) keeps the source subscription alive **forever**, even after all subscribers unsubscribe. It never tells the source "nobody is listening anymore."
+
+**How `refCount` works — reference counting explained:**
+
+Internally, `shareReplay` keeps a **counter** of how many active subscribers there are:
+
+```
+Sub 1 subscribes   → counter: 0 → 1   → subscribes to source (HTTP request fires)
+Sub 2 subscribes   → counter: 1 → 2   → (already subscribed, just replays cached value)
+Sub 1 unsubscribes → counter: 2 → 1   → (still has Sub 2, stays connected)
+Sub 2 unsubscribes → counter: 1 → 0   → with refCount: true → unsubscribes from source
+```
+
+Angular automatically unsubscribes for you when:
+- You use the `async` pipe in a template → pipe unsubscribes on destroy
+- You use `takeUntil(this.destroy$)` + `ngOnDestroy` → `destroy$` fires, subscription ends
+- You use `takeUntilDestroyed()` → Angular calls unsubscribe on destroy
+- You manually call `.unsubscribe()` in `ngOnDestroy`
+
+Every one of these decrements the `refCount` counter. When it hits **zero**, `shareReplay` drops the source subscription.
+
+**Concrete example — two components, one service:**
+
+```typescript
+// === Service ===
+@Injectable({ providedIn: 'root' })
+export class ProductService {
+  // ❌ WITHOUT refCount — subscription lives forever
+  products$ = this.http.get<Product[]>('/api/products').pipe(
+    shareReplay(1)
+  );
+
+  // ✅ WITH refCount — cleans up when nobody is listening
+  productsRefCounted$ = this.http.get<Product[]>('/api/products').pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+}
+```
+
+```typescript
+// === Component A (navigated to first) ===
+@Component({ template: `<div *ngIf="products$ | async as products">{{ products.length }}</div>` })
+export class PageA {
+  products$ = this.productService.productsRefCounted$;
+  // counter: 0 → 1 → subscribes to source → HTTP request fires ✅
+}
+// User navigates away → async pipe unsubscribes → counter: 1 → 0
+// → With refCount: true → source unsubscribed, HTTP cancelled if still in-flight
+// → Without refCount → source stays alive, memory held forever
+```
+
+```typescript
+// === Component B (navigated to 2 minutes later) ===
+@Component({ template: `<div *ngIf="products$ | async as products">{{ products.length }}</div>` })
+export class PageB {
+  products$ = this.productService.productsRefCounted$;
+  // counter: 0 → 1 → re-subscribes to source → NEW HTTP request fires ✅
+  // Gets fresh data! The old cached value is gone because source was torn down.
+}
+```
+
+**The key trade-off:**
+
+| | `shareReplay(1)` | `shareReplay({ bufferSize: 1, refCount: true })` |
+|---|---|---|
+| Source stays alive when all unsubscribe? | ✅ Yes (memory leak risk) | ❌ No (source torn down) |
+| Cache survives after all unsubscribe? | ✅ Yes | ❌ No (cache cleared with source) |
+| Late subscriber gets cached data? | ✅ Yes | ⚠️ Only if at least one subscriber is still active |
+| Re-fetches when re-subscribed? | ❌ No | ✅ Yes (new HTTP call) |
+| Use when | Data never changes, cache forever | Data may become stale, want fresh re-fetch |
+
+**Rule of thumb:**
+- **Static reference data** (countries, categories) → `shareReplay(1)` — cache it once, keep it forever
+- **Data that can change** (user list, products) → `shareReplay({ bufferSize: 1, refCount: true })` — re-fetch when needed
+
+---
+
 ### Real-world examples: Sequential vs Concurrent
 
 #### Example 1: Sequential API calls (one at a time)
