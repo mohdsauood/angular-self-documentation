@@ -1,0 +1,23 @@
+# Jekyll configuration — safety net
+# This site is pure HTML/JS (not Jekyll), but if Jekyll runs,
+# exclude everything so it doesn't choke on Angular {{ }} syntax.
+
+exclude:
+  - docs/
+  - css/
+  - js/
+  - .github/
+  - .vscode/
+  - node_modules/
+  - README.md
+  - .gitignore
+  - .nojekyll
+  - CNAME
+  - LICENSE
+
+# Don't process markdown files at all
+markdown_ext: ""
+
+# Keep only the static HTML entry point
+include:
+  - index.html
