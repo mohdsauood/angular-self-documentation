@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular Self-Documentation</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <!-- Top Navbar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="topbar-brand">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2L2 7L5 24L16 30L27 24L30 7L16 2Z" fill="#DD0031"/>
+          <path d="M16 2V30L27 24L30 7L16 2Z" fill="#C3002F"/>
+          <path d="M16 5.5L7.5 7.8L8.5 20L16 24.5L23.5 20L24.5 7.8L16 5.5Z" fill="white" opacity="0.1"/>
+          <path d="M8.5 20L16 24.5V5.5L7.5 7.8L8.5 20Z" fill="white" opacity="0.2"/>
+        </svg>
+        <span>Angular Self-Docs</span>
+      </a>
+      <nav class="topbar-nav">
+        <a href="https://angular.dev" target="_blank" rel="noopener">angular.dev</a>
+        <a href="https://github.com" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left" id="sidebarLeft">
+      <div class="sidebar-left-inner">
+        <a href="/" class="sidebar-back-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Home
+        </a>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Fundamentals</h3>
+          <nav class="sidebar-nav" id="navFundamentals">
+            <!-- Populated by JS -->
+          </nav>
+        </div>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Roadmap</h3>
+          <nav class="sidebar-nav" id="navRoadmap">
+            <!-- Populated by JS -->
+          </nav>
+        </div>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Meta Docs</h3>
+          <nav class="sidebar-nav" id="navMeta">
+            <!-- Populated by JS -->
+          </nav>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content" id="mainContent">
+      <div class="content-welcome" id="welcomeScreen">
+        <h1>Angular Self-Documentation</h1>
+        <p class="welcome-subtitle">Your personal Angular 21 knowledge base — written in your own words, using the Feynman Technique.</p>
+        <div class="welcome-cards">
+          <div class="welcome-card" onclick="navigateTo('fundamentals/01-what-is-angular.md')">
+            <div class="welcome-card-icon">🚀</div>
+            <h3>Start Learning</h3>
+            <p>Begin with "What is Angular?" and work through the fundamentals.</p>
+          </div>
+          <div class="welcome-card" onclick="navigateTo('roadmap/roadmap-beginner-to-6-year-developer.md')">
+            <div class="welcome-card-icon">🗺️</div>
+            <h3>View Roadmap</h3>
+            <p>See the learning path from beginner to 6-year developer.</p>
+          </div>
+          <a href="docs/README.md" class="welcome-card" onclick="event.preventDefault(); navigateTo('README.md');">
+            <div class="welcome-card-icon">📖</div>
+            <h3>Read the Guide</h3>
+            <p>Learn how to use this knowledge base effectively.</p>
+          </a>
+        </div>
+      </div>
+      <article class="content-article" id="contentArticle" style="display:none;">
+        <!-- Rendered markdown goes here -->
+      </article>
+    </main>
+
+    <!-- Right Sidebar: On This Page -->
+    <aside class="sidebar-right" id="sidebarRight">
+      <div class="sidebar-right-inner">
+        <h3 class="sidebar-right-title">On this page</h3>
+        <nav class="toc-nav" id="tocNav">
+          <!-- Populated by JS -->
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Mobile Nav Toggle -->
+  <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 12h18M3 6h18M3 18h18"/>
+    </svg>
+  </button>
+</body>
+</html>
