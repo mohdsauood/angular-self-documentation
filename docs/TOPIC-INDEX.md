@@ -192,7 +192,6 @@ This file helps you find topics quickly.
   - All other breaking changes and deprecations
 
 ## Other Files
-- [00-your-definitions-corrected.md](fundamentals/00-your-definitions-corrected.md) - Your original definitions (corrected)
 - [DOCUMENTATION-TONE-GUIDE.md](DOCUMENTATION-TONE-GUIDE.md) - Writing style guide
 
 ## Roadmap
