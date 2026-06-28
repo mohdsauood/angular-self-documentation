@@ -158,6 +158,24 @@ provideHttpClient(
 ## Quick memory line
 Interceptor = middleware that runs automatically on every HTTP request and response.
 
+---
+
+## Angular v22 updates
+
+### HTTP in v22: deprecations and migration path
+
+Angular v22 continues the move from XHR assumptions to the fetch backend.
+
+Key changes:
+- `reportProgress` behavior in some contexts is deprecated (depends on XHR semantics)
+- `withFetch` options and migration guidance are now central for new code
+- some HTTP APIs that were loosely typed or nullable are now stricter
+
+Upgrade guidance:
+- prefer fetch-friendly flows
+- review places that depend on upload/download progress events
+- keep interceptors pure and stateless so backend changes are easier to adopt
+
 ## Common mistakes
 - Forgetting to call `next(req)` — the request never reaches the server
 - Mutating the request directly instead of using `.clone()`

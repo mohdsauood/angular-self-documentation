@@ -4,6 +4,7 @@
 
 exclude:
   - docs/
+  - docs-private/
   - css/
   - js/
   - .github/

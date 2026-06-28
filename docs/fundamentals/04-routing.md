@@ -458,6 +458,35 @@ That's it. Angular handles the rest — the browser's View Transitions API wraps
 - `withComponentInputBinding()` eliminates boilerplate for reading route params
 - View transitions make navigation feel native and polished
 
+---
+
+## Angular v22 updates
+
+### `provideRoutes()` removed
+
+Use `provideRouter(routes)` for normal setup.
+If you need to append routes from feature providers, use the `ROUTES` multi-provider token.
+
+### `paramsInheritanceStrategy` default changed to `always`
+
+Route params now inherit from all parent routes by default.
+
+If you need previous behavior:
+
+```typescript
+provideRouter(routes, withRouterConfig({
+  paramsInheritanceStrategy: 'emptyOnly'
+}))
+```
+
+### `CanMatch` signatures are stricter
+
+`currentSnapshot` is now required in `CanMatchFn` and class-based `CanMatch` implementations.
+
+### Route typing got stricter
+
+Some route APIs now use narrower and more accurate types (for example title resolution). Old code that relied on `any` may need explicit typing.
+
 ## Quick memory line
 Routing = URL paths that show different components.
 

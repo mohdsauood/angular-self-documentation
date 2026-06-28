@@ -19,7 +19,7 @@ A button on its own is not an input control in the form sense (it is a trigger).
 
 Forms are also how you collect user input, validate it, and send it to your application or server.
 
-## Three approaches to Angular forms (as of Angular 21)
+## Three approaches to Angular forms (as of Angular 22)
 
 ### 1. Template-Driven Forms
 Template-driven forms put most logic in the template.
@@ -35,8 +35,8 @@ Reactive forms put logic in the component class.
 - Type-safe with TypeScript
 - Example: registration form with many fields and custom validators
 
-### 3. Signal Forms — Angular 21 experimental
-Angular 21 introduced **Signal Forms** — a new experimental API in `@angular/forms/signals` that replaces `FormGroup`/`FormControl` with a fully signal-based approach.
+### 3. Signal Forms — stable in Angular 22
+Angular 21 introduced **Signal Forms**, and Angular 22 made them stable. They use `@angular/forms/signals` and replace `FormGroup`/`FormControl` with a signal-based approach.
 
 ```typescript
 import { form, field } from '@angular/forms/signals';
@@ -56,7 +56,7 @@ export class LoginComponent {
 }
 ```
 
-> This is **experimental** in Angular 21. For full Signal Forms documentation including `FieldState`, validators, and async validation, see [20-signals.md](20-signals.md#signal-forms-angular-21-experimental).
+> For full Signal Forms documentation including `FieldState`, validators, and async validation, see [20-signals.md](20-signals.md#signal-forms-angular-21).
 
 ## Important form concepts
 
@@ -82,6 +82,33 @@ Show errors to users when validation fails.
 - Ensures data quality before sending to server
 - Better user experience (users see errors immediately)
 - Prevents bad or dangerous input
+
+---
+
+## Angular v22 updates
+
+### Signal Forms are now stable
+
+Signal Forms moved from experimental to stable in Angular v22.
+
+What this means:
+- `@angular/forms/signals` is production-ready
+- You can use signal-first forms without waiting for preview maturity
+- Migration from classic forms is still possible with compatibility paths
+
+### Breaking change: `min` and `max` no longer accept strings
+
+From Angular v22, form validation for `min` and `max` expects `number` or `null`.
+
+```typescript
+// Before (can break after upgrade)
+Validators.min('18' as any)
+
+// After
+Validators.min(18)
+```
+
+If your app binds validator values from strings (for example from config or URL params), convert them first.
 
 ## Quick memory line
 Forms = capture input + validate it + submit to app.

@@ -218,6 +218,28 @@ Both `resource()` and `httpResource()` expose `.value()`, `.isLoading()`, `.erro
 ## Quick memory line
 Service = a class that handles a specific job (data, logic, state) so components don't have to.
 
+---
+
+## Angular v22 updates
+
+### `@Service()` decorator
+
+Angular v22 adds `@Service()` as a shorthand for app-wide services.
+
+```typescript
+import { Service } from '@angular/core';
+
+@Service() // shorthand for @Injectable({ providedIn: 'root' })
+export class UserService {
+  // ...
+}
+```
+
+Important:
+- `@Service()` and `@Injectable({ providedIn: 'root' })` are both valid
+- Existing services do not need to be rewritten immediately
+- `injectAsync()` can load either style; it does not require `@Service()`
+
 ## Common mistakes
 - Putting HTTP calls or business logic directly in components
 - Creating a new service instance manually with `new UserService()` instead of using DI

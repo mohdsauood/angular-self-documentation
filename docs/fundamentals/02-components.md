@@ -229,6 +229,18 @@ No `<app-toast>` in any template. The notification just appears.
 
 ---
 
+## Angular v22 updates
+
+### `ComponentMirror` API
+
+Angular v22 introduces `ComponentMirror` for safer runtime metadata/introspection scenarios.
+
+Use this when tooling or advanced runtime utilities need component metadata without relying on private internals.
+
+For most app-level component code, nothing changes. This is mostly useful for framework tooling, dynamic infrastructure, and advanced libraries.
+
+---
+
 ---
 
 ## Content Projection — `ng-content`

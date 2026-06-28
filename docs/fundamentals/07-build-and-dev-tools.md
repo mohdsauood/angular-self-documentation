@@ -93,6 +93,24 @@ Vite is for **you** while coding; production build is for your **users** — it 
 
 ---
 
+## Angular v22 updates
+
+### Webpack builder migration in v22
+
+Angular v22 completes the move away from legacy webpack builders.
+
+What changed:
+- `@angular-devkit/build-angular:browser` is removed
+- `@angular-devkit/build-angular:browser-esbuild` and `ng build --watch` are deprecated in favor of `application`
+
+Recommended action:
+- migrate to `@angular/build:application`
+- use the modern dev/build flow (Vite + esbuild under the hood)
+
+If your workspace still uses old builder targets, update `angular.json` as part of the upgrade.
+
+---
+
 ## Other common mistakes
 - Thinking Vite is only for Angular (it works with React, Vue, Svelte, etc.)
 - Not understanding that `ng serve` now uses Vite under the hood (it used to use Webpack)

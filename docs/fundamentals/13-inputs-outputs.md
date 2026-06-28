@@ -258,6 +258,20 @@ export class ButtonComponent {
 
 ---
 
+## Angular v22 updates
+
+### Programmatic binding helpers
+
+Angular v22 adds helpers for dynamic component creation with explicit bindings:
+
+- `inputBinding(...)`
+- `outputBinding(...)`
+- `twoWayBinding(...)`
+
+These APIs are useful when creating components in TypeScript (for example in dialogs or dynamic host containers), and you want input/output wiring without manual boilerplate.
+
+---
+
 ## Why `$event` in Angular?
 
 ### The honest answer

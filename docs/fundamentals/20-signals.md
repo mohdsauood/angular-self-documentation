@@ -21,7 +21,7 @@ this.count.update(n => n + 1); // based on previous value
 <p>{{ count() }}</p>  <!-- auto-updates when count changes -->
 ```
 
-> Signals were introduced in Angular 16 (developer preview), became stable in Angular 17, and are the **primary reactivity model** in Angular 21. `linkedSignal`, `toSignal`, and `toObservable` are all stable. Signal Forms (`@angular/forms/signals`) are experimental in Angular 21. Signals replace most uses of `ngOnChanges`, `BehaviorSubject`, and manual change detection.
+> Signals were introduced in Angular 16 (developer preview), became stable in Angular 17, and are the **primary reactivity model** in modern Angular. `linkedSignal`, `toSignal`, and `toObservable` are stable. Signal Forms (`@angular/forms/signals`) became stable in Angular v22. Signals replace most uses of `ngOnChanges`, `BehaviorSubject`, and manual change detection.
 
 ---
 
@@ -603,9 +603,7 @@ items = viewChildren<ElementRef>('item'); // Signal<readonly ElementRef[]>
 
 ## Signal Forms (Angular 21+)
 
-Angular 21 shipped an **experimental** native signal-based forms API. It lives in `@angular/forms/signals` and is completely separate from `FormControl`/`FormGroup`. You define your data model as a plain signal, then Angular does the rest.
-
-> **Experimental** — the API may change. Don't use it in production without understanding the risk. For production apps today, reactive forms with `toSignal()` is still the safe choice.
+Angular 21 introduced a native signal-based forms API, and Angular v22 made it stable. It lives in `@angular/forms/signals` and is separate from `FormControl`/`FormGroup`. You define your data model as a plain signal, then Angular does the rest.
 
 ---
 
@@ -806,7 +804,7 @@ results = toSignal(
 
 | Your situation | What to use |
 |---------------|------------|
-| New app on Angular 21+, comfortable with experimental APIs | Signal Forms (`@angular/forms/signals`) |
+| New app on Angular 22+ | Signal Forms (`@angular/forms/signals`) |
 | Existing app with reactive forms | Reactive forms + `toSignal(form.valueChanges, { initialValue: form.value })` |
 | Simple UI with no validators needed | Pure signals + event binding |
 | Need RxJS pipeline (debounce, switchMap) | `toObservable(signal).pipe(...)` → `toSignal()` |

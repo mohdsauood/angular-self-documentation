@@ -12,6 +12,13 @@
   <!-- Top Navbar -->
   <header class="topbar">
     <div class="topbar-inner">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="true" aria-controls="sidebarLeft">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+      </div>
       <a href="/" class="topbar-brand">
         <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M16 2L2 7L5 24L16 30L27 24L30 7L16 2Z" fill="#DD0031"/>
@@ -84,6 +91,17 @@
             <p>Learn how to use this knowledge base effectively.</p>
           </a>
         </div>
+        <section class="home-last-updated-wrap" aria-live="polite">
+          <div class="home-last-updated" id="homeLastUpdated">
+            Last updated: Loading latest changes...
+          </div>
+          <button class="home-see-more-btn" id="homeLastChangesToggle" type="button" aria-expanded="false" aria-controls="homeLastChanges" style="display:none;">
+            See more
+          </button>
+          <div class="home-last-changes" id="homeLastChanges" hidden>
+            Loading last 5 changes...
+          </div>
+        </section>
       </div>
       <article class="content-article" id="contentArticle" style="display:none;">
         <!-- Rendered markdown goes here -->
@@ -100,12 +118,5 @@
       </div>
     </aside>
   </div>
-
-  <!-- Mobile Nav Toggle -->
-  <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M3 12h18M3 6h18M3 18h18"/>
-    </svg>
-  </button>
 </body>
 </html>

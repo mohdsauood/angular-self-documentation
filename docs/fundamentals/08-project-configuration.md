@@ -246,6 +246,35 @@ App config = central place to configure app and register all services (providers
 
 ---
 
+## Angular v22 updates
+
+### `strictTemplates` now defaults to `true`
+
+After upgrading to Angular v22, template type-checking is stricter by default.
+
+If your codebase needs temporary fallback while fixing errors:
+
+```json
+{
+  "angularCompilerOptions": {
+    "strictTemplates": false
+  }
+}
+```
+
+Angular migrations can auto-add compatibility diagnostics for noisy checks like:
+- `nullishCoalescingNotNullable`
+- `optionalChainNotNullable`
+
+### Platform requirements for Angular 22
+
+- Node.js: `^22.22.3` or `^24.15.0` or `^26.0.0`
+- TypeScript: `>=6.0.0 <6.1.0`
+
+Always align Node and TypeScript before running `ng update` to avoid migration failures.
+
+---
+
 ## Common mistakes
 - Deleting `.angular` folder thinking it's important (it's just cache)
 - Editing `angular.json` incorrectly and breaking builds

@@ -381,6 +381,31 @@ What marks a component dirty in `OnPush`?
 8. ✅ Manual `markForCheck()` — you called it
 9. ✅ Manual `detectChanges()` — you called it
 
+---
+
+## Angular v22 updates
+
+### `OnPush` is now the default
+
+In Angular v22, components without an explicit `changeDetection` setting are treated as `OnPush` by default.
+
+Before v22, many apps relied on eager checks implicitly. After upgrade, those components may stop updating if they were depending on mutable object updates or non-Angular callbacks.
+
+If you need temporary old behavior while migrating:
+
+```typescript
+@Component({
+  changeDetection: ChangeDetectionStrategy.Eager
+})
+export class LegacyComponent {}
+```
+
+Recommended direction:
+- Keep `OnPush`
+- Move to immutable updates
+- Prefer signals for local and derived state
+- Use `markForCheck()` only for truly external callbacks
+
 In most Angular applications, your components are already getting checked through #1-7, so you rarely need manual `markForCheck()`.
 
 ---

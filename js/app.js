@@ -32,6 +32,8 @@ const TOPICS = {
     { file: 'fundamentals/23-shadow-dom.md', label: 'Shadow DOM' },
     { file: 'fundamentals/24-change-detection.md', label: 'Change Detection' },
     { file: 'fundamentals/25-aria-accessibility.md', label: 'ARIA & Accessibility' },
+    { file: 'fundamentals/26-injectAsync-and-resource-api.md', label: 'injectAsync() & Resource API' },
+    { file: 'fundamentals/27-angular-v22-features.md', label: 'Angular v22 Features' },
   ],
   roadmap: [
     { file: 'roadmap/roadmap-beginner-to-6-year-developer.md', label: 'Beginner → 6-Year Developer' },
@@ -52,7 +54,9 @@ let currentFile = null;
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', () => {
   buildNav();
-  setupMobileToggle();
+  setupSidebarToggle();
+  setupBackHomeLink();
+  loadHomeLastUpdated();
   handleInitialRoute();
   window.addEventListener('hashchange', handleRouteChange);
 });
@@ -149,6 +153,89 @@ function showWelcome() {
   document.getElementById('tocNav').innerHTML = '';
   currentFile = null;
   updateActiveNav(null);
+}
+
+async function loadHomeLastUpdated() {
+  const target = document.getElementById('homeLastUpdated');
+  const tableTarget = document.getElementById('homeLastChanges');
+  const toggleBtn = document.getElementById('homeLastChangesToggle');
+  if (!target || !tableTarget || !toggleBtn) return;
+
+  try {
+    const response = await fetch(`${DOCS_BASE}last-changes.md`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const markdown = await response.text();
+    const rowMatches = [...markdown.matchAll(/\|\s*\[(.+?)\]\((.+?)\)\s*\|\s*([^|]+)\|/g)];
+    const entries = rowMatches.map((m) => ({
+      topicTitle: m[1].trim(),
+      topicPath: resolveRelativePath(m[2].trim()),
+      changedAt: m[3].trim()
+    }));
+
+    if (entries.length === 0) {
+      target.textContent = 'Last updated: Information unavailable';
+      tableTarget.textContent = 'No recent changes available';
+      tableTarget.hidden = true;
+      toggleBtn.style.display = 'none';
+      return;
+    }
+
+    const latest = entries[0];
+    const lastFive = entries.slice(0, 5);
+
+    target.innerHTML = `Last updated: <strong>${latest.changedAt}</strong> · <a href="#${latest.topicPath}" id="homeLastUpdatedLink">${latest.topicTitle}</a>`;
+    const navLink = document.getElementById('homeLastUpdatedLink');
+    navLink?.addEventListener('click', (event) => {
+      event.preventDefault();
+      navigateTo(latest.topicPath);
+    });
+
+    const rowsHtml = lastFive.map((entry) => (
+      `<tr><td><a href="#${entry.topicPath}" class="home-change-link" data-file="${entry.topicPath}">${entry.topicTitle}</a></td><td>${entry.changedAt}</td></tr>`
+    )).join('');
+
+    tableTarget.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Last Modified</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>`;
+
+    tableTarget.hidden = true;
+    toggleBtn.style.display = 'inline-flex';
+    toggleBtn.textContent = 'See more';
+    toggleBtn.setAttribute('aria-expanded', 'false');
+
+    toggleBtn.onclick = () => {
+      const isHidden = tableTarget.hidden;
+      tableTarget.hidden = !isHidden;
+      toggleBtn.textContent = isHidden ? 'See less' : 'See more';
+      toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+    };
+
+    tableTarget.querySelectorAll('.home-change-link').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const file = link.getAttribute('data-file');
+        if (file) {
+          navigateTo(file);
+        }
+      });
+    });
+  } catch (error) {
+    target.textContent = 'Last updated: Could not load latest change data';
+    tableTarget.textContent = 'Could not load last 5 changes';
+    tableTarget.hidden = true;
+    toggleBtn.style.display = 'none';
+    console.error('Failed to load homepage last-updated info:', error);
+  }
 }
 
 // ---------- Post-Process Article ----------
@@ -277,19 +364,42 @@ function updateActiveNav(file) {
   });
 }
 
-// ---------- Mobile Nav Toggle ----------
-function setupMobileToggle() {
-  const toggle = document.getElementById('mobileNavToggle');
+function closeMobileSidebar() {
   const sidebar = document.getElementById('sidebarLeft');
+  const toggle = document.getElementById('sidebarToggle');
+
+  sidebar.classList.remove('open');
+  toggle?.setAttribute('aria-expanded', 'false');
+}
+
+// ---------- Sidebar Toggle ----------
+function setupSidebarToggle() {
+  const toggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebarLeft');
+  if (!toggle || !sidebar) return;
+
+  const desktopCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+  if (desktopCollapsed && window.innerWidth > 768) {
+    document.body.classList.add('sidebar-collapsed');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
 
   toggle.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+    if (window.innerWidth <= 768) {
+      const mobileOpen = sidebar.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', mobileOpen ? 'true' : 'false');
+      return;
+    }
+
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', collapsed ? 'true' : 'false');
+    toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   });
 
   // Close sidebar when clicking a nav link on mobile
   sidebar.addEventListener('click', (e) => {
     if (e.target.tagName === 'A' && window.innerWidth <= 768) {
-      sidebar.classList.remove('open');
+      closeMobileSidebar();
     }
   });
 
@@ -299,7 +409,31 @@ function setupMobileToggle() {
         !sidebar.contains(e.target) &&
         e.target !== toggle &&
         !toggle.contains(e.target)) {
-      sidebar.classList.remove('open');
+      closeMobileSidebar();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      closeMobileSidebar();
+      const collapsed = document.body.classList.contains('sidebar-collapsed');
+      toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+  });
+}
+
+function setupBackHomeLink() {
+  const link = document.querySelector('.sidebar-back-link');
+  if (!link) return;
+
+  link.setAttribute('href', '#');
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.location.hash = '';
+    showWelcome();
+
+    if (window.innerWidth <= 768) {
+      closeMobileSidebar();
     }
   });
 }

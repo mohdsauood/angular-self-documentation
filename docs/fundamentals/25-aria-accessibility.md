@@ -229,6 +229,19 @@ ARIA = giving HTML elements a voice so assistive technology understands what the
 
 ---
 
+## Angular v22 updates
+
+### Angular Aria package family is stable
+
+In Angular v22, Angular Aria package support is stable.
+
+What this means:
+- no need to keep "experimental" warnings for Angular Aria usage
+- accessibility APIs are safe to teach as production-ready
+- semantic HTML and keyboard testing are still mandatory
+
+---
+
 ## Where to go next
 
 - Install `@angular/cdk` and try `LiveAnnouncer` for loading states

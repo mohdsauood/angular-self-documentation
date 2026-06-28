@@ -170,6 +170,27 @@ This file helps you find topics quickly.
   - Angular Material's built-in accessibility
   - Common ARIA mistakes and how to fix them
 
+### injectAsync & Resource API (26) — new
+- [26-injectAsync-and-resource-api.md](fundamentals/26-injectAsync-and-resource-api.md)
+  - `injectAsync()` — lazy-load services on demand
+  - Prefetching with `{ prefetch: onIdle }`
+  - `resource()` — signal-based async data fetching
+  - Resource status: idle, loading, reloading, resolved, error, local
+  - Aborting requests with `abortSignal`
+  - `httpResource()` — HttpClient wrapper returning signals
+  - Resource composition with `snapshot` and `resourceFromSnapshots()`
+  - SSR caching with `TransferState`
+
+### Angular v22 Features (27) — new
+- [27-angular-v22-features.md](fundamentals/27-angular-v22-features.md)
+  - Stabilized: Signal Forms, Resource API, Angular Aria
+  - New: `injectAsync()`, `@Service()`, `inputBinding()`, `outputBinding()`, `twoWayBinding()`
+  - New: `ComponentMirror`, `onIdle()`, `IdleService`
+  - Breaking: `OnPush` is default, `strictTemplates` defaults to `true`
+  - Breaking: `provideRoutes()` removed, `ComponentFactoryResolver` removed
+  - Breaking: TypeScript 6.0 required, Node.js 22+ required
+  - All other breaking changes and deprecations
+
 ## Other Files
 - [00-your-definitions-corrected.md](fundamentals/00-your-definitions-corrected.md) - Your original definitions (corrected)
 - [DOCUMENTATION-TONE-GUIDE.md](DOCUMENTATION-TONE-GUIDE.md) - Writing style guide
